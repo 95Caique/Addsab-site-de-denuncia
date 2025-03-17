@@ -4,9 +4,13 @@
 
 3 - Crie seu ambiente virtual (venv) no seu terminal para instalar os pacotes necessários: 
 
-No Linux - python3 -m venv venv Ative com: source venv/bin/activate
+No Linux - python3 -m venv venv 
 
-No Windows - python3 -m venv venv ative com: venv\Scripts\activate se estiver assim (venv) está ativada, pode 
+Ative com: source venv/bin/activate
+
+No Windows - python3 -m venv venv 
+
+ative com: venv\Scripts\activate se estiver assim (venv) está ativada, pode 
 instalar os requirements nesse ambiente criado.
 
 4 - Estando dentro da pasta do projeto Addsab-site-de-denuncia instale os requirements(pacotes) com a venv ativa no terminal (venv) com o comando pip install -r requirements.txt
