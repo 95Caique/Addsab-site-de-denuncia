@@ -1,16 +1,22 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulário de Denuncia</title>
-    <link rel="stylesheet" href="styles/styles.css">
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
 </head>
+{% load static %}
+
 <body>
     <header>
         <h1>Denúncia de Maus-Tratos a Animais</h1>
         <p>Preserve a vida e o bem-estar dos animais. Sua denúncia pode salvar uma vida</p>
     </header>
+        {% csrf_token %}
+
     <main>
         <form action="#" method="POST" class="denuncia-form">
             <section>
@@ -28,32 +34,32 @@
                 <input type="text" name="idade" id="idade">
 
                 <label for="descrição">descrição do Animal:</label>
-                <textarea id="descrição" name="descrição" rows="4" required></textarea> 
+                <textarea id="descrição" name="descrição" rows="4" required></textarea>
             </section>
             <section>
                 <h2>2. Detalhes do Caso</h2>
                 <label>Tipo de Maus-Tratos Observados:</label>
-                <div>
+                <div class="checkbox-container">
                     <input type="checkbox" id="abandonado" name="Tipo" value="Abandono">
                     <label for="abandonado">Abandono</label>
                 </div>
-                <div>
+                <div class="checkbox-container">
                     <input type="checkbox" id="negligencia" name="Tipo" value="Negligencia">
                     <label for="negligencia">Negligencia</label>
                 </div>
-                <div>
+                <div class="checkbox-container">
                     <input type="checkbox" id="violencia" name="tipo" value="Violência Física">
                     <label for="violencia">Violência Física</label>
                 </div>
-                <di>
+                <div class="checkbox-container">
                 <input type="checkbox" id="trabalho-forcado" name="tipo" value="Trabalho Forçado">
                 <label for="trabalho-forcado">Trabalho Forçado</label>
                 </div>
-                <div>
+                <div class="checkbox-container">
                     <input type="checkbox" id="alimentacao" name="tipo" value="Alimentação Inadequada">
                     <label for="alimentacao">Alimentação Inadequada</label>
                 </div>
-                <div>
+                <div class="checkbox-container">
                     <input type="checkbox" id="outros" name="tipo" value="Outros">
                     <label for="outros">Outros (Descreva abaixo)</label>
                 </div>
@@ -78,7 +84,13 @@
             </section>
             <section>
                 <h2>5. Dados do Denunciante</h2>
-                <p>(Opcional, pode ser feita de forma anônima)</p>
+                <p>(Ao clicar no botão, sua denúncia será feita de forma anônima)</p>
+
+                <button type="button" id="toggle-anonimo" class="btn-anonimo">
+                    Denúncia Anônima
+                </button>
+
+                <div id="denunciante-info">
                 <label for="nome-denunciante">Nome Completo:</label>
                 <input type="text" id="nome-denunciante" name="nome-denunciante">
 
@@ -87,13 +99,31 @@
 
                 <label for="telefone">Telefone (opcional):</label>
                 <input type="text" id="telefone" name="telefone">
+                </div>
             </section>
             <button type="submit" class="btn-submit">Enviar Denúncia</button>
             </form>
             <footer>
                 <p>&copy; 2025 - Todos os direitos reservados. Denunciar é proteger!</p>
-                <p class="reservado">Desenvolvedor: <strong>Manoel Donda</strong> </p>
+                <p class="reservado">Desenvolvedor: <a href="https://wa.me/+5518997317434" target="_blank" rel="noopener noreferrer">Manoel Donda</a> </p>
             </footer>
     </main>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var botaoAnonimo = document.getElementById("toggle-anonimo");
+            var infoDenunciante = document.getElementById("denunciante-info");
+
+            botaoAnonimo.addEventListener("click", function() {
+                if (infoDenunciante.classList.contains("hidden")) {
+                    infoDenunciante.classList.remove("hidden");
+                    botaoAnonimo.textContent = "Denúncia Anônima";
+                } else {
+                    infoDenunciante.classList.add("hidden");
+                    botaoAnonimo.textContent = "Mostrar Dados do Denunciante";
+                }
+            });
+        });
+
+    </script>
 </body>
 </html>
