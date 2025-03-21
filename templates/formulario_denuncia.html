@@ -132,14 +132,7 @@
 
 {% endblock %}
 
-{% block footer %}
-    <footer class="bg-dark text-white py-3 mt-5">
-        <div class="container text-center">
-            <p>2025 - Todos os direitos reservados. Denunciar é proteger!</p>
-            <p class="reservado">Desenvolvedor: <a href="https://wa.me/+5518997317434" target="_blank" rel="noopener noreferrer">Manoel Donda</a></p>
-        </div>
-    </footer>
-{% endblock %}
+
 
 <script>
     document.addEventListener("DOMContentLoaded", function() {
@@ -147,10 +140,7 @@
         var infoDenunciante = document.getElementById("denunciante-info");
 
         botaoAnonimo.addEventListener("click", function() {
-            infoDenunciante.classList.toggle("hidden");
-            botaoAnonimo.textContent = infoDenunciante.classList.contains("hidden") ? "Mostrar Dados do Denunciante" : "Denúncia Anônima";
+            infoDenunciante.classList.toggle("d-none");
+            botaoAnonimo.textContent = infoDenunciante.classList.contains("d-none") ? "Mostrar Dados do Denunciante" : "Denúncia Anônima";
         });
     });
-</script>
- <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybPWsG10U1cA6vJ6uD3E4JjhrzW9m5j7xjRnYoP5Vx+sfD5hku" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0OaH7A44cAdj3JtK58c4Z6JhTkPB2p6l6J2smW8f5yPe7V7f" crossorigin="anonymous"></script>

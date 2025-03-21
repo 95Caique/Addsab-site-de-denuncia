@@ -1,6 +1,6 @@
 from django.db import models
 from .enums import tipo_maus_tratos_choices
-
+from django.utils.safestring import mark_safe
 class Denuncia(models.Model):
     especie = models.CharField("Espécie do Animal", max_length=50)
     nome = models.CharField("Nome do Animal", max_length=50, blank=True, null=True)
@@ -11,7 +11,7 @@ class Denuncia(models.Model):
     tipo_maustratos = models.TextField("Tipo de Maus-Tratos")
     descricao_caso = models.TextField("Descrição detalhada dos Maus-Tratos")
     responsavel = models.CharField("Nome do responsável pelo animal", max_length=50, blank=True, null=True)
-    comprovacao = models.FileField("Anexe fotos ou vídeos", upload_to='comprovacoes/', blank=True, null=True)
+    imagens = models.ImageField("Anexe fotos ou vídeos", upload_to='media/', blank=True, null=True)
     nome_denunciante = models.CharField ("Nome do Denunciante", max_length=100, blank=True, null=True,
     help_text="Sua identificação não é obrigatória, identifiqu-se apenas se quiser!" )
     email = models.EmailField("Email", blank=True, null=True)
