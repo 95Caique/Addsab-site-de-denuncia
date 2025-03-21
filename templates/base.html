@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Formulário de Denúncia{% endblock %}</title>
+
+    <!-- CSS personalizado -->
+    <link rel="stylesheet" href="{% static 'style.css' %}">
+
+    <!-- Bootstrap CSS via CDN -->
+    <script>
+
+    </script>
+</head>
+
+<body>
+
+    <!-- Bloco para o conteúdo específico da página -->
+    {% block content %}
+    {% endblock %}
+
+    <!-- Rodapé -->
+    {% block footer %}
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p>2025 - Todos os direitos reservados. Denunciar é proteger!</p>
+            <p class="reservado">Desenvolvedor: <a href="https://wa.me/+5518997317434" target="_blank" rel="noopener noreferrer">Manoel Donda</a></p>
+        </div>
+    </footer>
+    {% endblock %}
+
+    <!-- Bootstrap JS via CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybPWsG10U1cA6vJ6uD3E4JjhrzW9m5j7xjRnYoP5Vx+sfD5hku" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0OaH7A44cAdj3JtK58c4Z6JhTkPB2p6l6J2smW8f5yPe7V7f" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,129 +1,156 @@
-{% load static %}
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário de Denuncia</title>
-    <link rel="stylesheet" href="{% static 'style.css' %}">
-
-</head>
+{% extends 'base.html' %}
 {% load static %}
 
-<body>
-    <header>
+{% block title %}Denúncia de Maus-Tratos a Animais{% endblock %}
+
+{% block content %}
+<header class="bg-light py-5">
+    <div class="container text-center">
         <h1>Denúncia de Maus-Tratos a Animais</h1>
-        <p>Preserve a vida e o bem-estar dos animais. Sua denúncia pode salvar uma vida</p>
-    </header>
+        <p>Preserve a vida e o bem-estar dos animais. Sua denúncia pode salvar uma vida!</p>
+    </div>
+</header>
+
+<main class="container my-5">
+    {% block messages %}
+    {% if messages %}
+    <div class="alert alert-info">
+        {% for message in messages %}
+            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% endblock %}
+
+    <form action="" method="POST" enctype="multipart/form-data" class="denuncia-form">
         {% csrf_token %}
 
-    <main>
-        <form action="#" method="POST" class="denuncia-form">
-            <section>
-                <h2>1. Informações do animal</h2>
-                <label for="especie">Espécie do Animal:</label>
-                <input type="text" id="especie" name="especie" required>
+        <section>
+            <h2>1. Informações do Animal</h2>
+            <div class="form-group">
+                {{ form.especie.label_tag }}
+                {{ form.especie }}
+                {% if form.especie.errors %}
+                    <div class="field-error">{{ form.especie.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.nome.label_tag }}
+                {{ form.nome }}
+                {% if form.nome.errors %}
+                    <div class="field-error">{{ form.nome.errors }}</div>
+                {% endif %}
+            </div>
+            <!-- Continue com os outros campos -->
+        </section>
 
-                <label for="nome">Nome do Animal (se conhecido):</label>
-                <input type="text" name="nome" id="nome">
+        <section>
+            <h2>2. Detalhes do Caso</h2>
+            <div class="form-group">
+                <label>Tipo de Maus-Tratos:</label>
+                {{ form.tipo_maustratos }}
+                {% if form.tipo_maustratos.errors %}
+                    <div class="field-error">{{ form.tipo_maustratos.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.descricao_caso.label_tag }}
+                {{ form.descricao_caso }}
+                {% if form.descricao_caso.errors %}
+                    <div class="field-error">{{ form.descricao_caso.errors }}</div>
+                {% endif %}
+            </div>
+        </section>
 
-                <label for="raça">Raça (se possível):</label>
-                <input type="text" name="raça" id="raça">
+        <section>
+            <h2>3. Informações sobre o Responsável (se conhecido)</h2>
+            <div class="form-group">
+                {{ form.responsavel.label_tag }}
+                {{ form.responsavel }}
+                {% if form.responsavel.errors %}
+                    <div class="field-error">{{ form.responsavel.errors }}</div>
+                {% endif %}
+            </div>
+            <div class="form-group">
+                {{ form.local.label_tag }}
+                {{ form.local }}
+                {% if form.local.errors %}
+                    <div class="field-error">{{ form.local.errors }}</div>
+                {% endif %}
+            </div>
+        </section>
 
-                <label for="idade">Idade(aproximadamente):</label>
-                <input type="text" name="idade" id="idade">
+        <section>
+            <h2>4. Comprovação do Caso</h2>
+            <div class="form-group">
+                {{ form.comprovacao.label_tag }}
+                {{ form.comprovacao }}
+                {% if form.comprovacao.errors %}
+                    <div class="field-error">{{ form.comprovacao.errors }}</div>
+                {% endif %}
+            </div>
+        </section>
 
-                <label for="descrição">descrição do Animal:</label>
-                <textarea id="descrição" name="descrição" rows="4" required></textarea>
-            </section>
-            <section>
-                <h2>2. Detalhes do Caso</h2>
-                <label>Tipo de Maus-Tratos Observados:</label>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="abandonado" name="Tipo" value="Abandono">
-                    <label for="abandonado">Abandono</label>
+        <section>
+            <h2>5. Dados do Denunciante</h2>
+            <p>(Ao clicar no botão, sua denúncia será feita de forma anônima)</p>
+            <button type="button" id="toggle-anonimo" class="btn btn-secondary mb-3">Denúncia Anônima</button>
+
+            <div id="denunciante-info" class="hidden">
+                <div class="form-group">
+                    {{ form.nome_denunciante.label_tag }}
+                    {{ form.nome_denunciante }}
+                    <small>{{ form.nome_denunciante.help_text }}</small>
+                    {% if form.nome_denunciante.errors %}
+                        <div class="field-error">{{ form.nome_denunciante.errors }}</div>
+                    {% endif %}
                 </div>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="negligencia" name="Tipo" value="Negligencia">
-                    <label for="negligencia">Negligencia</label>
+
+                <div class="form-group">
+                    {{ form.email.label_tag }}
+                    {{ form.email }}
+                    {% if form.email.errors %}
+                        <div class="field-error">{{ form.email.errors }}</div>
+                    {% endif %}
                 </div>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="violencia" name="tipo" value="Violência Física">
-                    <label for="violencia">Violência Física</label>
+
+                <div class="form-group">
+                    {{ form.telefone.label_tag }}
+                    {{ form.telefone }}
+                    {% if form.telefone.errors %}
+                        <div class="field-error">{{ form.telefone.errors }}</div>
+                    {% endif %}
                 </div>
-                <div class="checkbox-container">
-                <input type="checkbox" id="trabalho-forcado" name="tipo" value="Trabalho Forçado">
-                <label for="trabalho-forcado">Trabalho Forçado</label>
-                </div>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="alimentacao" name="tipo" value="Alimentação Inadequada">
-                    <label for="alimentacao">Alimentação Inadequada</label>
-                </div>
-                <div class="checkbox-container">
-                    <input type="checkbox" id="outros" name="tipo" value="Outros">
-                    <label for="outros">Outros (Descreva abaixo)</label>
-                </div>
-                <label for="descricao-caso">Descrição Detalhada dos Maus-Tratos:</label>
-                <textarea id="descricao-caso" name="descricao-caso" rows="6" required></textarea>
-            </section>
-            <section>
-                <h2>3. Informações sobre o Responsável (se conhecido)</h2>
-                <label for="responsavel">Nome do Responsável:</label>
-                <input type="text" id="responsavel" name="responsavel">
+            </div>
+        </section>
 
-                <label for="local">Endereço ou Local onde o Caso Ocorria:</label>
-                <input type="text" id="local" name="local">
+        <button type="submit" class="btn btn-success">Enviar Denúncia</button>
+    </form>
+</main>
 
-                <label for="detralhes">Detalhes do Responsável (se possível):</label>
-                <textarea id="detalhes" name="detalhes" rows="4"></textarea>
-            </section>
-            <section>
-                <h2>4. Comprovação do Caso</h2>
-                <label for="comprovacao">Anexar Fotos ou Vídeos:</label>
-                <input type="file" id="comprovacao" name="comprovacao" accept="imagem/*, video/*">
-            </section>
-            <section>
-                <h2>5. Dados do Denunciante</h2>
-                <p>(Ao clicar no botão, sua denúncia será feita de forma anônima)</p>
+{% endblock %}
 
-                <button type="button" id="toggle-anonimo" class="btn-anonimo">
-                    Denúncia Anônima
-                </button>
+{% block footer %}
+    <footer class="bg-dark text-white py-3 mt-5">
+        <div class="container text-center">
+            <p>2025 - Todos os direitos reservados. Denunciar é proteger!</p>
+            <p class="reservado">Desenvolvedor: <a href="https://wa.me/+5518997317434" target="_blank" rel="noopener noreferrer">Manoel Donda</a></p>
+        </div>
+    </footer>
+{% endblock %}
 
-                <div id="denunciante-info">
-                <label for="nome-denunciante">Nome Completo:</label>
-                <input type="text" id="nome-denunciante" name="nome-denunciante">
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        var botaoAnonimo = document.getElementById("toggle-anonimo");
+        var infoDenunciante = document.getElementById("denunciante-info");
 
-                <label for="email">E-mail:</label>
-                <input type="email" id="email" name="email">
-
-                <label for="telefone">Telefone (opcional):</label>
-                <input type="text" id="telefone" name="telefone">
-                </div>
-            </section>
-            <button type="submit" class="btn-submit">Enviar Denúncia</button>
-            </form>
-            <footer>
-                <p>&copy; 2025 - Todos os direitos reservados. Denunciar é proteger!</p>
-                <p class="reservado">Desenvolvedor: <a href="https://wa.me/+5518997317434" target="_blank" rel="noopener noreferrer">Manoel Donda</a> </p>
-            </footer>
-    </main>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var botaoAnonimo = document.getElementById("toggle-anonimo");
-            var infoDenunciante = document.getElementById("denunciante-info");
-
-            botaoAnonimo.addEventListener("click", function() {
-                if (infoDenunciante.classList.contains("hidden")) {
-                    infoDenunciante.classList.remove("hidden");
-                    botaoAnonimo.textContent = "Denúncia Anônima";
-                } else {
-                    infoDenunciante.classList.add("hidden");
-                    botaoAnonimo.textContent = "Mostrar Dados do Denunciante";
-                }
-            });
+        botaoAnonimo.addEventListener("click", function() {
+            infoDenunciante.classList.toggle("hidden");
+            botaoAnonimo.textContent = infoDenunciante.classList.contains("hidden") ? "Mostrar Dados do Denunciante" : "Denúncia Anônima";
         });
-
-    </script>
-</body>
-</html>
+    });
+</script>
+ <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js" integrity="sha384-oBqDVmMz4fnFO9gybPWsG10U1cA6vJ6uD3E4JjhrzW9m5j7xjRnYoP5Vx+sfD5hku" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js" integrity="sha384-pzjw8f+ua7Kw1TIq0OaH7A44cAdj3JtK58c4Z6JhTkPB2p6l6J2smW8f5yPe7V7f" crossorigin="anonymous"></script>
