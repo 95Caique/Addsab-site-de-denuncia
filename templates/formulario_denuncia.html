@@ -85,10 +85,10 @@
         <section>
             <h2>4. Comprovação do Caso</h2>
             <div class="form-group">
-                {{ form.comprovacao.label_tag }}
-                {{ form.comprovacao }}
-                {% if form.comprovacao.errors %}
-                    <div class="field-error">{{ form.comprovacao.errors }}</div>
+                {{ form.imagens.label_tag }}
+                {{ form.imagens }}
+                {% if form.imagens.errors %}
+                    <div class="field-error">{{ form.imagens.errors }}</div>
                 {% endif %}
             </div>
         </section>
@@ -144,3 +144,4 @@
             botaoAnonimo.textContent = infoDenunciante.classList.contains("d-none") ? "Mostrar Dados do Denunciante" : "Denúncia Anônima";
         });
     });
+</script>t
