@@ -16,9 +16,9 @@
     {% if messages %}
     <div class="alert alert-info">
         {% for message in messages %}
-            <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
-                {{ message }}
-            </div>
+        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
         {% endfor %}
     </div>
     {% endif %}
@@ -30,20 +30,31 @@
         <section>
             <h2>1. Informações do Animal</h2>
             <div class="form-group">
-                {{ form.especie.label_tag }}
+                <label for="{{ form.especie.id_for_label }}" class="required">
+                    {{ form.especie.label }}
+                </label>
                 {{ form.especie }}
                 {% if form.especie.errors %}
-                    <div class="field-error">{{ form.especie.errors }}</div>
+                <div class="field-error">{{ form.especie.errors }}</div>
                 {% endif %}
+            </div>
+
+            <style>
+                .required::before {
+                    content: "*";
+                    color: red;
+                    margin-right: 4px;
+                }
+            </style>
+
             </div>
             <div class="form-group">
                 {{ form.nome.label_tag }}
                 {{ form.nome }}
                 {% if form.nome.errors %}
-                    <div class="field-error">{{ form.nome.errors }}</div>
+                <div class="field-error">{{ form.nome.errors }}</div>
                 {% endif %}
             </div>
-            <!-- Continue com os outros campos -->
         </section>
 
         <section>
@@ -52,14 +63,14 @@
                 <label>Tipo de Maus-Tratos:</label>
                 {{ form.tipo_maustratos }}
                 {% if form.tipo_maustratos.errors %}
-                    <div class="field-error">{{ form.tipo_maustratos.errors }}</div>
+                <div class="field-error">{{ form.tipo_maustratos.errors }}</div>
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.descricao_caso.label_tag }}
                 {{ form.descricao_caso }}
                 {% if form.descricao_caso.errors %}
-                    <div class="field-error">{{ form.descricao_caso.errors }}</div>
+                <div class="field-error">{{ form.descricao_caso.errors }}</div>
                 {% endif %}
             </div>
         </section>
@@ -70,14 +81,16 @@
                 {{ form.responsavel.label_tag }}
                 {{ form.responsavel }}
                 {% if form.responsavel.errors %}
-                    <div class="field-error">{{ form.responsavel.errors }}</div>
+                <div class="field-error">{{ form.responsavel.errors }}</div>
                 {% endif %}
             </div>
             <div class="form-group">
                 {{ form.local.label_tag }}
+                <p>Sem o endereço da ocorrência não será possível averiguar a denúncia.</p>
+
                 {{ form.local }}
                 {% if form.local.errors %}
-                    <div class="field-error">{{ form.local.errors }}</div>
+                <div class="field-error">{{ form.local.errors }}</div>
                 {% endif %}
             </div>
         </section>
@@ -88,7 +101,7 @@
                 {{ form.imagens.label_tag }}
                 {{ form.imagens }}
                 {% if form.imagens.errors %}
-                    <div class="field-error">{{ form.imagens.errors }}</div>
+                <div class="field-error">{{ form.imagens.errors }}</div>
                 {% endif %}
             </div>
         </section>
@@ -96,15 +109,18 @@
         <section>
             <h2>5. Dados do Denunciante</h2>
             <p>(Ao clicar no botão, sua denúncia será feita de forma anônima)</p>
-            <button type="button" id="toggle-anonimo" class="btn btn-secondary mb-3">Denúncia Anônima</button>
+            <button type="button" id="toggle-anonimo" class="btn btn-warning rounded-pill mb-3">Quero me identificar
+            </button>
+
 
             <div id="denunciante-info" class="hidden">
                 <div class="form-group">
                     {{ form.nome_denunciante.label_tag }}
+
                     {{ form.nome_denunciante }}
                     <small>{{ form.nome_denunciante.help_text }}</small>
                     {% if form.nome_denunciante.errors %}
-                        <div class="field-error">{{ form.nome_denunciante.errors }}</div>
+                    <div class="field-error">{{ form.nome_denunciante.errors }}</div>
                     {% endif %}
                 </div>
 
@@ -112,7 +128,7 @@
                     {{ form.email.label_tag }}
                     {{ form.email }}
                     {% if form.email.errors %}
-                        <div class="field-error">{{ form.email.errors }}</div>
+                    <div class="field-error">{{ form.email.errors }}</div>
                     {% endif %}
                 </div>
 
@@ -120,13 +136,19 @@
                     {{ form.telefone.label_tag }}
                     {{ form.telefone }}
                     {% if form.telefone.errors %}
-                        <div class="field-error">{{ form.telefone.errors }}</div>
+                    <div class="field-error">{{ form.telefone.errors }}</div>
                     {% endif %}
                 </div>
             </div>
         </section>
 
-        <button type="submit" class="btn btn-success">Enviar Denúncia</button>
+        <button type="submit" class="btn btn-success rounded-pill">Enviar Denúncia</button>
+        <br>
+        <p class="text-danger fw-bold mt-3">ATENÇÃO - FALSA COMUNICAÇÃO É CRIME</p>
+        <p>
+            A falsa comunicação de um crime também é crime e tem pena prevista no Artigo 340 do Código Penal Brasileiro.
+            Todas as informações descritas aqui devem ser verdadeiras, esteja ciente!
+        </p>
     </form>
 </main>
 
@@ -134,14 +156,3 @@
 
 
 
-<script>
-    document.addEventListener("DOMContentLoaded", function() {
-        var botaoAnonimo = document.getElementById("toggle-anonimo");
-        var infoDenunciante = document.getElementById("denunciante-info");
-
-        botaoAnonimo.addEventListener("click", function() {
-            infoDenunciante.classList.toggle("d-none");
-            botaoAnonimo.textContent = infoDenunciante.classList.contains("d-none") ? "Mostrar Dados do Denunciante" : "Denúncia Anônima";
-        });
-    });
-</script>t

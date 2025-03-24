@@ -8,15 +8,17 @@ from .enums import tipo_maus_tratos_choices
 class DenunciaAdmin(admin.ModelAdmin):
     # Campos visíveis no formulário de edição
     fields = ('especie', 'nome', 'raca', 'idade', 'descricao_animal', 'local', 'tipo_maustratos', 'descricao_caso',
-              'responsavel', 'imagens', 'nome_denunciante', 'email', 'telefone', 'data_denuncia', 'admin_photo')
+              'responsavel', 'imagens', 'nome_denunciante', 'email', 'telefone', 'data_denuncia', )
 
     # Campos exibidos na listagem no Admin
     list_display = (
         'imagens',  # Miniatura da imagem ou link do vídeo
         'especie',
         'local',
+        'nome_denunciante',
         'get_tipos_formatados',
-        'data_denuncia'
+        'data_denuncia',
+
     )
 
     # Campos clicáveis na listagem

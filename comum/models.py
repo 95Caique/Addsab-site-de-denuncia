@@ -10,10 +10,10 @@ class Denuncia(models.Model):
     local = models.CharField ("Endereço do Caso", max_length=255, blank=True, null=True)
     tipo_maustratos = models.TextField("Tipo de Maus-Tratos")
     descricao_caso = models.TextField("Descrição detalhada dos Maus-Tratos")
-    responsavel = models.CharField("Nome do responsável pelo animal", max_length=50, blank=True, null=True)
+    responsavel = models.CharField("Nome ou características do responsável pelo animal", max_length=50, blank=True, null=True)
     imagens = models.ImageField("Anexe fotos ou vídeos", upload_to='media/', blank=True, null=True)
     nome_denunciante = models.CharField ("Nome do Denunciante", max_length=100, blank=True, null=True,
-    help_text="Sua identificação não é obrigatória, identifiqu-se apenas se quiser!" )
+    help_text="Sua identificação não é obrigatória, identifique-se apenas se quiser!" )
     email = models.EmailField("Email", blank=True, null=True)
     telefone = models.CharField("Telefone", max_length=50, blank=True, null=True)
 
