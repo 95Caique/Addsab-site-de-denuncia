@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Detalhes da Denúncia{% endblock %}
+
+{% block content %}
+<main class="container my-5" xmlns="http://www.w3.org/1999/html">
+    <div class="card mb-3" style="border-radius: 15px !important;">
+        <img src="{% if denuncia.imagens %}{{ denuncia.imagens.url }}{% else %}{% static 'images/imagem-padrao.jpg' %}
+            {% endif %}"
+             alt="Imagem da denúncia" class="card-img-top" style="width 100%; object-fit: cover;
+             border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+        <div class="card-body">
+            <hr>
+            <h5 class="card-text"><strong>Espécie do Animal: </strong>{{ denuncia.especie }}</h5>
+            <p class="card-text"><strong>Local:</strong> {{ denuncia.local }}</p>
+            <p class="card-text"><strong>Descrição: </strong>{{ denuncia.descricao_caso }}</p>
+            <p class="card-text"><small class="text-muted">Denunciado em {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</small></p>
+            <a href="{% url 'lista_denuncias' %}" class="btn btn-secondary mt-3">Voltar</a>
+        </div>
+    </div>
+</main>
+{% endblock %}

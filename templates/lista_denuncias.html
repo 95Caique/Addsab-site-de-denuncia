@@ -1,0 +1,40 @@
+<!--    {% extends 'base.html' %}-->
+    {% load static %}
+
+    {% block title %}Lista de Denúncias{% endblock %}
+
+    {% block content %}
+    <header class="bg-light py-5">
+        <div class="container text-center">
+            <h1>Página de Acompanhamento de Denúncias</h1>
+        </div>
+    </header>
+
+    <main class="container my-5">
+        <div class="row">
+            {% for denuncia in denuncias %}
+            <div class="col-md-4 mb-4" id="card">
+                <div class="card h-100" style="border-radius: 15px !important;">
+<!--                    Se a denuncia tiver imagens é pra mostrar, se não aparece a imagem padrão-->
+                    <img src="{% if denuncia.imagens %}{{ denuncia.imagens.url }}{% else %}{% static 'images/imagem-padrao.jpg' %}
+                    {% endif %}"
+                     alt="Imagem da denúncia" class="card-img-top" style="max-height: 200px; object-fit: cover;
+                     border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+
+                    <div class="card-body">
+                        <h5 class="card-title">{{ denuncia.especie }}</h5>
+                        <h6 class="card-subtitle text-muted mb-3">Denunciado em {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</h6>
+                        <p class="card-text"><strong>Local:</strong> {{ denuncia.local }}</p>
+                        <p class="card-text"><strong>Descrição:</strong> {{ denuncia.descricao_caso|slice:":100" }}...</p>
+                        <a href="{% url 'denuncia-detalhe' denuncia.id %}" class="btn btn-info mt-2">Ver detalhes</a>
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <p class="col-12">Nenhuma denúncia encontrada.</p>
+            {% endfor %}
+        </div>
+    </main>
+
+
+    {% endblock %}
