@@ -1,0 +1,57 @@
+{% extends 'templates/base.html' %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<body>
+<div class="wrapper">
+    <section>
+        <div id="log">
+            <div class="container main-content col-lg-4 mt-5">
+                <div class="card rounded-3 shadow p-4">
+                    <div class="card-body">
+                        <h2 class="text-center mb-4">Entre com seus dados:</h2>
+                        <form method="post">
+                        {% csrf_token %}
+                        {{ form.non_field_errors }}
+
+                        <div class="mb-3">
+                            {{ form.username.label_tag }}
+                            {{ form.username }}
+                            {% for error in form.username.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.password.label_tag }}
+                            {{ form.password }}
+                            {% for error in form.password.errors %}
+                                <div class="text-danger">{{ error }}</div>
+                            {% endfor %}
+                        </div>
+
+                        <input type="hidden" name="next" value="{{ request.GET.next }}">
+
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-success rounded-pill w-100 mt-3">Login</button>
+                        </div>
+
+                        {% if error_message %}
+                            <div class="alert alert-danger mt-3">{{ error_message }}</div>
+                        {% endif %}
+
+                        <div role="alert" class="mt-3 text-center">
+                            <a href="/esqueceusenha/" class="btn btn-link">Esqueceu a Senha?</a>
+                            <a href="/primeiroacesso/" class="btn btn-link">Primeiro Acesso?</a>
+                        </div>
+                    </form>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+</body>
+{% endblock %}

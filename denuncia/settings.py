@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'comum',
+    'adm',
 
 ]
 
@@ -135,7 +136,6 @@ STATICFILES_DIRS = [
 STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 
 
-
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
@@ -143,3 +143,8 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
+
+
+LOGIN_URL = '/login/'
+LOGIN_REDIRECT_URL = '/painel_denuncias/'  # Página para onde o usuário é redirecionado após o login
+LOGOUT_REDIRECT_URL = '/'

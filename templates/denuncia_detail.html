@@ -3,20 +3,189 @@
 {% block title %}Detalhes da Denúncia{% endblock %}
 
 {% block content %}
-<main class="container my-5" xmlns="http://www.w3.org/1999/html">
+<main class="container my-5">
+    {% if messages %}
+    <div class="alert alert-info alert-dismissible fade show" role="alert">
+        {% for message in messages %}
+        <div class="message {% if message.tags %}{{ message.tags }}{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
     <div class="card mb-3" style="border-radius: 15px !important;">
-        <img src="{% if denuncia.imagens %}{{ denuncia.imagens.url }}{% else %}{% static 'images/imagem-padrao.jpg' %}
-            {% endif %}"
-             alt="Imagem da denúncia" class="card-img-top" style="width 100%; object-fit: cover;
-             border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Denúncia #{{ denuncia.id }}</h4>
+            <div class="d-flex align-items-center gap-3">
+                <span class="badge bg-light text-dark">{{ denuncia.get_status_display }}</span>
+                {% if denuncia.atendente_responsavel %}
+                    <span class="badge bg-info">Atendente: {{ denuncia.atendente_responsavel.get_full_name|default:denuncia.atendente_responsavel.username }}</span>
+                {% endif %}
+            </div>
+        </div>
+        
+        {% if denuncia.imagens %}
+        <img src="{{ denuncia.imagens.url }}" alt="Imagem da denúncia" class="card-img-top" 
+             style="max-height: 400px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+        {% else %}
+        <img src="{% static 'images/imagem-padrao.jpg' %}" alt="Imagem padrão" class="card-img-top" 
+             style="max-height: 400px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+        {% endif %}
+        
         <div class="card-body">
-            <hr>
-            <h5 class="card-text"><strong>Espécie do Animal: </strong>{{ denuncia.especie }}</h5>
-            <p class="card-text"><strong>Local:</strong> {{ denuncia.local }}</p>
-            <p class="card-text"><strong>Descrição: </strong>{{ denuncia.descricao_caso }}</p>
-            <p class="card-text"><small class="text-muted">Denunciado em {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</small></p>
-            <a href="{% url 'lista_denuncias' %}" class="btn btn-secondary mt-3">Voltar</a>
+            <div class="row">
+                <div class="col-md-6">
+                    <h5 class="card-title">Informações do Animal</h5>
+                    <hr>
+                    <p><strong>Espécie:</strong> {{ denuncia.especie }}</p>
+                    <p><strong>Nome:</strong> {{ denuncia.nome|default:"Não informado" }}</p>
+                    <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>
+                    <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>
+                    <p><strong>Descrição:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>
+                </div>
+                
+                <div class="col-md-6">
+                    <h5 class="card-title">Detalhes do Caso</h5>
+                    <hr>
+                    <p><strong>Local:</strong> {{ denuncia.local|default:"Não informado" }}</p>
+                    <p><strong>Responsável:</strong> {{ denuncia.responsavel|default:"Não informado" }}</p>
+                    <p><strong>Tipos de Maus-Tratos:</strong> {{ denuncia.get_tipos_formatados }}</p>
+                    <p><strong>Descrição do Caso:</strong> {{ denuncia.descricao_caso }}</p>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5 class="card-title">Informações do Denunciante</h5>
+                    <hr>
+                    <p><strong>Nome:</strong> {{ denuncia.nome_denunciante|default:"Anônimo" }}</p>
+                    <p><strong>Email:</strong> {{ denuncia.email|default:"Não informado" }}</p>
+                    <p><strong>Telefone:</strong> {{ denuncia.telefone|default:"Não informado" }}</p>
+                </div>
+            </div>
+            
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5 class="card-title">Informações do Sistema</h5>
+                    <hr>
+                    <p><strong>Data da Denúncia:</strong> {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</p>
+                    <p><strong>Status:</strong> {{ denuncia.get_status_display }}</p>
+                    <p><strong>Última Atualização:</strong> {{ denuncia.ultima_atualizacao|date:"d/m/Y H:i" }}</p>
+                </div>
+            </div>
+
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5 class="card-title">Gerenciamento da Denúncia</h5>
+                    <hr>
+                    <div class="d-flex gap-3 mb-4">
+                        {% if not denuncia.atendente_responsavel %}
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="atribuir">
+                                <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                <input type="hidden" name="atendente_id" value="{{ request.user.id }}">
+                                <button type="submit" class="btn btn-primary">Assumir Denúncia</button>
+                            </form>
+                        {% endif %}
+
+                        <div class="dropdown">
+                            <button class="btn btn-info dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                Atribuir para outro atendente
+                            </button>
+                            <ul class="dropdown-menu">
+                                {% for atendente in atendentes %}
+                                <li>
+                                    <form method="post" style="display: inline;">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="atribuir">
+                                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                        <input type="hidden" name="atendente_id" value="{{ atendente.id }}">
+                                        <button type="submit" class="dropdown-item {% if denuncia.atendente_responsavel == atendente %}active{% endif %}">
+                                            {{ atendente.get_full_name|default:atendente.username }}
+                                        </button>
+                                    </form>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+
+                        {% if denuncia.atendente_responsavel %}
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="remover_atribuicao">
+                                <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                <button type="submit" class="btn btn-warning">Remover Atribuição</button>
+                            </form>
+                        {% endif %}
+                    </div>
+
+                    <!-- Formulário de atualização de status -->
+                    <form method="post" class="mt-3">
+                        {% csrf_token %}
+                        <input type="hidden" name="action" value="update_status">
+                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                        
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Atualizar Status</label>
+                            <select name="status" id="status" class="form-select">
+                                {% for status_code, status_name in status_choices %}
+                                <option value="{{ status_code }}" {% if denuncia.status == status_code %}selected{% endif %}>
+                                    {{ status_name }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="descricao" class="form-label">Descrição da Tratativa</label>
+                            <textarea name="descricao" id="descricao" class="form-control" rows="3" required></textarea>
+                        </div>
+                        
+                        <button type="submit" class="btn btn-success">Atualizar Status</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Histórico de Tratativas -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <h5 class="card-title">Histórico de Tratativas</h5>
+                    <hr>
+                    {% if tratativas %}
+                        <div class="list-group">
+                            {% for tratativa in tratativas %}
+                                <div class="list-group-item">
+                                    <div class="d-flex w-100 justify-content-between">
+                                        <h6 class="mb-1">{{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}</h6>
+                                        <small>{{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>
+                                    </div>
+                                    <p class="mb-1">{{ tratativa.descricao }}</p>
+                                    <small>Status alterado de {{ tratativa.get_status_anterior_display }} para {{ tratativa.get_status_novo_display }}</small>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>Nenhuma tratativa registrada.</p>
+                    {% endif %}
+                </div>
+            </div>
+            
+            <div class="mt-4">
+                <a href="{% url 'painel_denuncias' %}" class="btn btn-secondary">Voltar para o Painel</a>
+            </div>
         </div>
     </div>
 </main>
+
+<style>
+    .dropdown-menu {
+        min-width: 200px;
+    }
+    .list-group-item {
+        border-left: 4px solid #4CAF50;
+    }
+</style>
 {% endblock %}

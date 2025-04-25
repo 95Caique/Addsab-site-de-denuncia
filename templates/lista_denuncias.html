@@ -15,7 +15,6 @@
             {% for denuncia in denuncias %}
             <div class="col-md-4 mb-4" id="card">
                 <div class="card h-100" style="border-radius: 15px !important;">
-<!--                    Se a denuncia tiver imagens é pra mostrar, se não aparece a imagem padrão-->
                     <img src="{% if denuncia.imagens %}{{ denuncia.imagens.url }}{% else %}{% static 'images/imagem-padrao.jpg' %}
                     {% endif %}"
                      alt="Imagem da denúncia" class="card-img-top" style="max-height: 200px; object-fit: cover;

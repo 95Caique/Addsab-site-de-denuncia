@@ -12,3 +12,10 @@ tipo_maus_tratos_choices = [
     ("Alimentacao Inadequada", "Alimentação Inadequada"),
     ("Outros", "Outros"),
 ]
+
+STATUS_DENUNCIA_CHOICES = [
+    ('recebida', 'Recebida'),
+    ('processando', 'Processando'),
+    ('tratada', 'Tratada'),
+    ('cancelada', 'Cancelada'),
+]

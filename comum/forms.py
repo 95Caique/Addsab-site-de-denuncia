@@ -7,12 +7,16 @@ class DenunciaForm(forms.ModelForm):
     tipo_maustratos = forms.MultipleChoiceField(
         choices=tipo_maus_tratos_choices,
         widget=forms.CheckboxSelectMultiple,
-        label="Tipo de Maus-Tratos"
+        label="Tipo de Maus-Tratos",
+        required=True
     )
 
     class Meta:
         model = Denuncia
         exclude = ['data_denuncia']
+        fields = ['especie', 'nome', 'raca', 'idade', 'descricao_animal', 'local', 
+                 'tipo_maustratos', 'descricao_caso', 'responsavel', 'imagens', 
+                 'nome_denunciante', 'email', 'telefone']
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -32,3 +36,4 @@ class DenunciaForm(forms.ModelForm):
                 raise forms.ValidationError(f"'{tipo}' não é uma opção válida.")
 
         return ",".join(tipos)
+

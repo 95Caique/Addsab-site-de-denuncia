@@ -1,6 +1,9 @@
 from django.db import models
-from .enums import tipo_maus_tratos_choices
+from django.contrib.auth.models import User
+from .enums import tipo_maus_tratos_choices, STATUS_DENUNCIA_CHOICES
 from django.utils.safestring import mark_safe
+from django.utils import timezone
+
 class Denuncia(models.Model):
     especie = models.CharField("Espécie do Animal", max_length=50)
     nome = models.CharField("Nome do Animal", max_length=50, blank=True, null=True)
@@ -11,13 +14,26 @@ class Denuncia(models.Model):
     tipo_maustratos = models.TextField("Tipo de Maus-Tratos")
     descricao_caso = models.TextField("Descrição detalhada dos Maus-Tratos")
     responsavel = models.CharField("Nome ou características do responsável pelo animal", max_length=50, blank=True, null=True)
-    imagens = models.ImageField("Anexe fotos ou vídeos", upload_to='media/', blank=True, null=True)
+    imagens = models.FileField("Anexe fotos ou vídeos", upload_to='comprovacoes/', blank=True, null=True)
     nome_denunciante = models.CharField ("Nome do Denunciante", max_length=100, blank=True, null=True,
     help_text="Sua identificação não é obrigatória, identifique-se apenas se quiser!" )
     email = models.EmailField("Email", blank=True, null=True)
     telefone = models.CharField("Telefone", max_length=50, blank=True, null=True)
 
     data_denuncia = models.DateTimeField("Data da Denúncia", auto_now_add=True)
+    status = models.CharField("Status", max_length=20, choices=STATUS_DENUNCIA_CHOICES, default='recebida')
+    
+    # Novos campos para controle de atendimento
+    atendente_responsavel = models.ForeignKey(
+        User,
+        verbose_name="Atendente Responsável",
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name='denuncias_atribuidas'
+    )
+    data_atribuicao = models.DateTimeField("Data de Atribuição", null=True, blank=True)
+    ultima_atualizacao = models.DateTimeField("Última Atualização", auto_now=True)
 
     class Meta:
         verbose_name = "Denúncia"
@@ -27,6 +43,20 @@ class Denuncia(models.Model):
     def __str__(self):
         return f"Denúncia: {self.especie} em {self.local or 'local não informado'}"
 
+    def atribuir_atendente(self, atendente):
+        """Atribui um atendente à denúncia"""
+        self.atendente_responsavel = atendente
+        self.data_atribuicao = timezone.now()
+        self.status = 'processando'
+        self.save()
+
+    def remover_atendente(self):
+        """Remove o atendente atribuído à denúncia"""
+        self.atendente_responsavel = None
+        self.data_atribuicao = None
+        self.status = 'recebida'
+        self.save()
+
     @property
     def tipos_maustratos_list(self):
         """Retorna a lista de tipos de maus-tratos."""
@@ -34,8 +64,39 @@ class Denuncia(models.Model):
             return []
         return self.tipo_maustratos.split(',')
 
+    def get_tipos_formatados(self):
+        """Retorna os tipos de maus-tratos formatados para exibição."""
+        from .enums import tipo_maus_tratos_choices
+        tipos_dict = dict(tipo_maus_tratos_choices)
+        tipos_list = [tipo.strip() for tipo in self.tipo_maustratos.split(",") if tipo.strip()]
+        return ", ".join([tipos_dict.get(tipo, tipo) for tipo in tipos_list])
+
     def save(self, *args, **kwargs):
         # Se tipo_maustratos for uma lista, converte para string
         if isinstance(self.tipo_maustratos, (list, tuple)):
             self.tipo_maustratos = ','.join(self.tipo_maustratos)
         super().save(*args, **kwargs)
+
+class Tratativa(models.Model):
+    denuncia = models.ForeignKey(
+        Denuncia,
+        on_delete=models.CASCADE,
+        related_name='tratativas'
+    )
+    atendente = models.ForeignKey(
+        User,
+        on_delete=models.SET_NULL,
+        null=True
+    )
+    descricao = models.TextField("Descrição da Tratativa")
+    data_tratativa = models.DateTimeField("Data da Tratativa", auto_now_add=True)
+    status_anterior = models.CharField(max_length=20, choices=STATUS_DENUNCIA_CHOICES)
+    status_novo = models.CharField(max_length=20, choices=STATUS_DENUNCIA_CHOICES)
+
+    class Meta:
+        ordering = ['-data_tratativa']
+        verbose_name = "Tratativa"
+        verbose_name_plural = "Tratativas"
+
+    def __str__(self):
+        return f"Tratativa da denúncia {self.denuncia.id} por {self.atendente.get_full_name() or self.atendente.username}"
