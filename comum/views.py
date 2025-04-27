@@ -1,3 +1,5 @@
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import DetailView
@@ -14,8 +16,10 @@ def denuncia_create_view(request):
         if form.is_valid():
             denuncia = form.save()
             messages.success(request, "Obrigado pela sua denúncia! Ela foi registrada com sucesso e será analisada pela nossa equipe.")
+            # Limpa o formulário após o envio bem-sucedido
             form = DenunciaForm()
         else:
+            # Adiciona mensagens de erro mais detalhadas
             for field, errors in form.errors.items():
                 for error in errors:
                     messages.error(request, f"Erro no campo {field}: {error}")
@@ -26,15 +30,13 @@ def denuncia_create_view(request):
 
 
 def lista_denuncias(request):
+    # Obtém todas as denúncias ordenadas pela data de criação (mais recentes primeiro)
     denuncias = Denuncia.objects.all().order_by('-data_denuncia')
     return render(request, 'lista_denuncias.html', {'denuncias': denuncias})
 
-class DenunciaDetailView(DetailView):
-    model = Denuncia
-    template_name = 'denuncia_detail.html'
-    context_object_name = 'denuncia'
-
+# @login_required
 def painel_denuncias(request):
+    # Processar ações de atualização de status, atribuição ou exclusão
     if request.method == 'POST':
         action = request.POST.get('action')
         denuncia_id = request.POST.get('denuncia_id')
@@ -52,9 +54,11 @@ def painel_denuncias(request):
                         denuncia.status = new_status
                         denuncia.save()
                         
+                        # Registra a tratativa
                         Tratativa.objects.create(
                             denuncia=denuncia,
-                            atendente=request.user,
+                            # atendende=request.user --mudar quando a criação de usuario estiver ok
+                            atendente=request.user if request.user.is_authenticated else None,
                             descricao=descricao,
                             status_anterior=status_anterior,
                             status_novo=new_status
@@ -82,6 +86,7 @@ def painel_denuncias(request):
             except User.DoesNotExist:
                 messages.error(request, "Atendente não encontrado.")
     
+    # Filtrar denúncias por status, se especificado
     status_filter = request.GET.get('status')
     atendente_filter = request.GET.get('atendente')
     
@@ -97,6 +102,7 @@ def painel_denuncias(request):
     
     denuncias = denuncias.order_by('-data_denuncia')
 
+    # Lista de atendentes para o formulário de atribuição
     atendentes = User.objects.filter(is_staff=True).order_by('first_name', 'username')
 
     context = {
@@ -115,13 +121,11 @@ def painel_denuncias(request):
 
 def denuncia_detail_view(request, pk):
     denuncia = get_object_or_404(Denuncia, pk=pk)
-    tratativas = denuncia.tratativas.all()
-    
+    tratativas = Tratativa.objects.filter(denuncia=denuncia)
     context = {
         'denuncia': denuncia,
         'tratativas': tratativas,
         'status_choices': STATUS_DENUNCIA_CHOICES,
         'atendentes': User.objects.filter(is_staff=True).order_by('first_name', 'username')
     }
-    
     return render(request, 'denuncia_detail.html', context)
