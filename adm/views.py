@@ -10,7 +10,7 @@ def is_gerente(user):
 def is_atendente(user):
     return user.is_authenticated and user.groups.filter(name='Atendente').exists()
 
-@user_passes_test(is_gerente)
+# @user_passes_test(is_gerente)
 def cadastrar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -26,7 +26,7 @@ def cadastrar_usuario(request):
             messages.error(request, 'Preencha todos os campos.')
     return render(request, 'adm/cadastrar_usuario.html')
 
-@login_required
+# @login_required
 def painel_adm(request):
     user = request.user
     if is_gerente(user):

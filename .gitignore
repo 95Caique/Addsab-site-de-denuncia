@@ -1,5 +1,13 @@
-venv/
+# Ignorar o banco de dados SQLite
 db.sqlite3
-comprovacoes/
+
+# Ignorar diretórios e arquivos gerados por Python
+__pycache__/
+*.pyc
+
+# Ignorar diretório de ambiente virtual
+venv/
+
+# Ignorar qualquer pasta ou arquivo chamada db.sqlite3 em subdiretórios
 db.sqlite3/
 *db.sqlite3/
