@@ -81,8 +81,8 @@
             <tr>
                 <th>ID</th>
                 <th>Espécie</th>
-                <th>Local</th>
-                <th>Data</th>
+                <th>Endereço</th>
+                <th>Data de Registro</th>
                 <th>Status</th>
                 <th>Ações</th>
             </tr>
@@ -90,7 +90,7 @@
         <tbody>
             {% for denuncia in denuncias %}
             <tr>
-                <td>#{{ denuncia.id }}</td>
+                <td>{{ denuncia.id }}</td>
                 <td>{{ denuncia.especie }}</td>
                 <td>{{ denuncia.local|default:"Não informado" }}</td>
                 <td>{{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</td>
@@ -106,7 +106,7 @@
                         </a>
                         
                         <div class="dropdown">
-                            <button class="action-btn edit-btn" type="button" id="statusDropdown{{ denuncia.id }}" data-bs-toggle="dropdown" aria-expanded="false" title="Atualizar Status">
+                            <button class="action-btn edit-btn" type="button" id="statusDropdown{{ denuncia.id }}" data-bs-toggle="dropdown" aria-expanded="true" title="Atualizar Status">
                                 <i class="fas fa-edit"></i>
                             </button>
                             <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ denuncia.id }}">

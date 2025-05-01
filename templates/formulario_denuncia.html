@@ -6,7 +6,7 @@
 {% block content %}
 <header class="bg-light py-5 position-relative">
     <div class="container text-center">
-        <a href="{% url 'painel_denuncias' %}"
+        <a href="{% url 'adm:login' %}?next={% url 'lista_denuncias' %}"
            class="btn btn-success rounded-pill mt-3 position-absolute top-0 end-0 m-3">Administração</a>
         <br>
         <h1>Denúncia de Maus-Tratos a Animais</h1>
@@ -151,6 +151,15 @@
             Todas as informações descritas aqui devem ser verdadeiras, esteja ciente!
         </p>
     </form>
+
+    {% for tratativa in tratativas %}
+        <div>
+            <strong>{{ tratativa.atendente }}</strong> - {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}<br>
+            {{ tratativa.descricao }}
+        </div>
+    {% empty %}
+        <p>Nenhuma tratativa registrada.</p>
+    {% endfor %}
 </main>
 
 {% endblock %}

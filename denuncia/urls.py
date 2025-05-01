@@ -11,6 +11,7 @@ urlpatterns = [
     path('denuncias/', lista_denuncias, name='lista_denuncias'),
     # path('denuncias/<int:pk>/', DenunciaDetailView.as_view(), name='denuncia-detalhe'),
     path('painel_denuncias/', painel_denuncias, name='painel_denuncias'),
+    path('adm/', include('adm.urls', namespace='adm')),
 
 ]
 if settings.DEBUG:

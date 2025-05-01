@@ -32,7 +32,7 @@ def denuncia_create_view(request):
 def lista_denuncias(request):
     # Obtém todas as denúncias ordenadas pela data de criação (mais recentes primeiro)
     denuncias = Denuncia.objects.all().order_by('-data_denuncia')
-    return render(request, 'lista_denuncias.html', {'denuncias': denuncias})
+    return render(request, 'painel_denuncias.html', {'denuncias': denuncias})
 
 # @login_required
 def painel_denuncias(request):
@@ -122,10 +122,46 @@ def painel_denuncias(request):
 def denuncia_detail_view(request, pk):
     denuncia = get_object_or_404(Denuncia, pk=pk)
     tratativas = Tratativa.objects.filter(denuncia=denuncia)
+    status_choices = STATUS_DENUNCIA_CHOICES
+    atendentes = User.objects.filter(is_staff=True).order_by('first_name', 'username')
+
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        if action:
+            if action == 'update_status':
+                status_anterior = denuncia.status
+                new_status = request.POST.get('status')
+                descricao = request.POST.get('descricao', '')
+                if new_status in [choice[0] for choice in STATUS_DENUNCIA_CHOICES]:
+                    denuncia.status = new_status
+                    denuncia.save()
+                    Tratativa.objects.create(
+                        denuncia=denuncia,
+                        atendente=request.user if request.user.is_authenticated else None,
+                        descricao=descricao,
+                        status_anterior=status_anterior,
+                        status_novo=new_status
+                    )
+                    messages.success(request, f"Status da denúncia atualizado para {denuncia.get_status_display()}.")
+            elif action == 'atribuir':
+                atendente_id = request.POST.get('atendente_id')
+                if atendente_id:
+                    atendente = User.objects.get(id=atendente_id)
+                    denuncia.atribuir_atendente(atendente)
+                    messages.success(request, f"Denúncia atribuída para {atendente.get_full_name() or atendente.username}.")
+            elif action == 'remover_atribuicao':
+                denuncia.remover_atendente()
+                messages.success(request, "Atribuição removida.")
+            elif action == 'delete':
+                denuncia.delete()
+                messages.success(request, "Denúncia excluída com sucesso.")
+                return redirect('painel_denuncias')
+        return redirect('denuncia-detalhe', pk=pk)
+
     context = {
         'denuncia': denuncia,
         'tratativas': tratativas,
-        'status_choices': STATUS_DENUNCIA_CHOICES,
-        'atendentes': User.objects.filter(is_staff=True).order_by('first_name', 'username')
+        'status_choices': status_choices,
+        'atendentes': atendentes
     }
     return render(request, 'denuncia_detail.html', context)
