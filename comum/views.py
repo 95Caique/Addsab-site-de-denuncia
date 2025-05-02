@@ -7,7 +7,7 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 
 from .forms import DenunciaForm
-from .models import Denuncia, Tratativa
+from .models import Denuncia, Tratativa, ComentarioDenuncia, AnexoDenuncia
 from .enums import STATUS_DENUNCIA_CHOICES
 
 def denuncia_create_view(request):
@@ -119,49 +119,62 @@ def painel_denuncias(request):
 
     return render(request, 'painel_denuncias.html', context)
 
+@login_required
 def denuncia_detail_view(request, pk):
     denuncia = get_object_or_404(Denuncia, pk=pk)
-    tratativas = Tratativa.objects.filter(denuncia=denuncia)
-    status_choices = STATUS_DENUNCIA_CHOICES
-    atendentes = User.objects.filter(is_staff=True).order_by('first_name', 'username')
-
+    
     if request.method == 'POST':
         action = request.POST.get('action')
-        if action:
-            if action == 'update_status':
+        
+        if action == 'add_comentario':
+            texto = request.POST.get('texto')
+            if texto:
+                ComentarioDenuncia.objects.create(
+                    denuncia=denuncia,
+                    autor=request.user,
+                    texto=texto
+                )
+                messages.success(request, 'Comentário adicionado com sucesso.')
+        
+        elif action == 'add_anexo':
+            if request.FILES.get('arquivo'):
+                arquivo = request.FILES['arquivo']
+                AnexoDenuncia.objects.create(
+                    denuncia=denuncia,
+                    arquivo=arquivo,
+                    nome=arquivo.name,
+                    anexado_por=request.user
+                )
+                messages.success(request, 'Anexo adicionado com sucesso.')
+        
+        elif action == 'update_status':
+            novo_status = request.POST.get('status')
+            descricao = request.POST.get('descricao', '')
+            if novo_status:
                 status_anterior = denuncia.status
-                new_status = request.POST.get('status')
-                descricao = request.POST.get('descricao', '')
-                if new_status in [choice[0] for choice in STATUS_DENUNCIA_CHOICES]:
-                    denuncia.status = new_status
-                    denuncia.save()
-                    Tratativa.objects.create(
-                        denuncia=denuncia,
-                        atendente=request.user if request.user.is_authenticated else None,
-                        descricao=descricao,
-                        status_anterior=status_anterior,
-                        status_novo=new_status
-                    )
-                    messages.success(request, f"Status da denúncia atualizado para {denuncia.get_status_display()}.")
-            elif action == 'atribuir':
-                atendente_id = request.POST.get('atendente_id')
-                if atendente_id:
-                    atendente = User.objects.get(id=atendente_id)
-                    denuncia.atribuir_atendente(atendente)
-                    messages.success(request, f"Denúncia atribuída para {atendente.get_full_name() or atendente.username}.")
-            elif action == 'remover_atribuicao':
-                denuncia.remover_atendente()
-                messages.success(request, "Atribuição removida.")
-            elif action == 'delete':
-                denuncia.delete()
-                messages.success(request, "Denúncia excluída com sucesso.")
-                return redirect('painel_denuncias')
+                denuncia.status = novo_status
+                denuncia.save()
+                # Criar uma tratativa para registrar a mudança de status
+                Tratativa.objects.create(
+                    denuncia=denuncia,
+                    atendente=request.user,
+                    descricao=descricao,
+                    status_anterior=status_anterior,
+                    status_novo=novo_status
+                )
+                messages.success(request, 'Status atualizado com sucesso.')
+
         return redirect('denuncia-detalhe', pk=pk)
+
+    comentarios = denuncia.comentarios.select_related('autor').all()
+    anexos = denuncia.anexos.select_related('anexado_por').all()
+    tratativas = denuncia.tratativas.select_related('atendente').all()
 
     context = {
         'denuncia': denuncia,
+        'comentarios': comentarios,
+        'anexos': anexos,
         'tratativas': tratativas,
-        'status_choices': status_choices,
-        'atendentes': atendentes
+        'status_choices': STATUS_DENUNCIA_CHOICES,
     }
     return render(request, 'denuncia_detail.html', context)

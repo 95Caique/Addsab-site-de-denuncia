@@ -1,7 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
 
-
 {% block content %}
 <main class="container my-5">
     {% if messages %}
@@ -15,49 +14,38 @@
     </div>
     {% endif %}
 
-<!--    <div class="card mb-3" style="border-radius: 15px !important;">-->
-<!--        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">-->
-<!--            <h4 class="mb-0">Denúncia #{{ denuncia.id }}</h4>-->
-<!--            <div class="d-flex align-items-center gap-3">-->
-<!--                <span class="text-dark">{{ denuncia.get_status_display }}</span>-->
-                {% if denuncia.atendente_responsavel %}
-                    <span class="badge bg-info">Atendente: {{ denuncia.atendente_responsavel.get_full_name|default:denuncia.atendente_responsavel.username }}</span>
-                {% endif %}
+        {% if denuncia.imagens %}
+            <img src="{{ denuncia.imagens.url }}" alt="Imagem da denúncia" class="card-img-top"
+                 style="width: 100%; max-height: 600px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+        {% else %}
+            <img src="{% static 'images/imagem-padrao.jpg' %}" alt="Imagem padrão" class="card-img-top"
+                 style="width: 100%; max-height: 600px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+        {% endif %}
+
+
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mt-3">
+                <h5 class="card-title">Informações do Animal</h5>
+                <hr>
+                <p><strong>Espécie:</strong> {{ denuncia.especie }}</p>
+                <p><strong>Nome:</strong> {{ denuncia.nome|default:"Não informado" }}</p>
+                <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>
+                <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>
+                <p><strong>Descrição:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>
+            </div>
+
+            <div class="col-md-6 mt-3">
+                <h5 class="card-title">Detalhes do Caso</h5>
+                <hr>
+                <p><strong>Local:</strong> {{ denuncia.local|default:"Não informado" }}</p>
+                <p><strong>Responsável:</strong> {{ denuncia.responsavel|default:"Não informado" }}</p>
+                <p><strong>Tipos de Maus-Tratos:</strong> {{ denuncia.get_tipos_formatados }}</p>
+                <p><strong>Descrição do Caso:</strong> {{ denuncia.descricao_caso }}</p>
             </div>
         </div>
 
-            {% if denuncia.imagens %}
-                <img src="{{ denuncia.imagens.url }}" alt="Imagem da denúncia" class="card-img-top"
-                     style="width: 100%; max-height: 600px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
-            {% else %}
-                <img src="{% static 'images/imagem-padrao.jpg' %}" alt="Imagem padrão" class="card-img-top"
-                     style="width: 100%; max-height: 600px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
-            {% endif %}
-
-
-        <div class="card-body">
-            <div class="row">
-                <div class="col-md-6 mt-3">
-                    <h5 class="card-title">Informações do Animal</h5>
-                    <hr>
-                    <p><strong>Espécie:</strong> {{ denuncia.especie }}</p>
-                    <p><strong>Nome:</strong> {{ denuncia.nome|default:"Não informado" }}</p>
-                    <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>
-                    <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>
-                    <p><strong>Descrição:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>
-                </div>
-
-                <div class="col-md-6 mt-3">
-                    <h5 class="card-title">Detalhes do Caso</h5>
-                    <hr>
-                    <p><strong>Local:</strong> {{ denuncia.local|default:"Não informado" }}</p>
-                    <p><strong>Responsável:</strong> {{ denuncia.responsavel|default:"Não informado" }}</p>
-                    <p><strong>Tipos de Maus-Tratos:</strong> {{ denuncia.get_tipos_formatados }}</p>
-                    <p><strong>Descrição do Caso:</strong> {{ denuncia.descricao_caso }}</p>
-                </div>
-            </div>
-
-            {% if denuncia.nome_denunciante %}
+        {% if denuncia.nome_denunciante %}
             <div class="row mt-4">
                 <div class="col-md-6">
                     <h5 class="card-title">Informações do Denunciante</h5>
@@ -77,74 +65,140 @@
             </div>
         {% endif %}
 
-            
+
+        <div class="row">
+            <hr>
+            <!--Linha do Tempo, Notas Internas e Anexos -->
+            <ul class="nav nav-tabs mb-3" id="denunciaTab" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="timeline-tab" data-bs-toggle="tab" href="#timeline" role="tab">
+                        Linha do Tempo <span class="badge bg-secondary">{{ comentarios.count }}</span>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="anexos-tab" data-bs-toggle="tab" href="#anexos" role="tab">
+                        Anexos <span class="badge bg-secondary">{{ anexos.count }}</span>
+                    </a>
+                </li>
+            </ul>
 
             <div class="row mt-4">
                 <div class="col-12">
-                    <h5 class="card-title">Gerenciamento da Denúncia</h5>
-                    <hr>
-                    <!-- Atualizar status -->
                     <form method="post" class="d-inline">
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_status">
-                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                <p><strong>Status:</strong> <span class="badge badge-{{ denuncia.status }}">{{ denuncia.get_status_display }}</span></p>
                         <div class="input-group mb-2">
                             <select name="status" class="form-select" required>
                                 {% for status_code, status_name in status_choices %}
                                     <option value="{{ status_code }}" {% if denuncia.status == status_code %}selected{% endif %}>{{ status_name }}</option>
                                 {% endfor %}
                             </select>
-                            <input type="text" name="descricao" class="form-control" placeholder="Descrição da tratativa" required>
-                            <button type="button" class="btn btn-info">Atualizar Status</button>
+                            <button type="submit" class="btn btn-success">Atualizar Status</button>
                         </div>
-                    </form>
-
-                    <!-- Atribuir atendente -->
-                    <form method="post" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="atribuir">
-                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
-                        <select name="atendente_id" class="form-select d-inline w-auto" required>
-                            <option value="">Atribuir atendente</option>
-                            {% for atendente in atendentes %}
-                                <option value="{{ atendente.id }}">{{ atendente.get_full_name|default:atendente.username }}</option>
-                            {% endfor %}
-                        </select>
-                        <button type="submit" class="btn btn-warning">Atribuir</button>
-                    </form>
-
-                    <!-- Remover atribuição -->
-                    {% if denuncia.atendente_responsavel %}
-                    <form method="post" class="d-inline">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="remover_atribuicao">
-                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
-                        <button type="submit" class="btn btn-secondary">Remover Atribuição</button>
-                    </form>
-                    {% endif %}
-
-                    <!-- Excluir denúncia -->
-                    <form method="post" class="d-inline" onsubmit="return confirm('Tem certeza que deseja excluir esta denúncia?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
-                        <button type="submit" class="btn btn-danger">Excluir</button>
                     </form>
                 </div>
             </div>
 
-            <!-- Histórico de Tratativas -->
+            <div class="tab-content" id="denunciaTabContent">
+                <div class="tab-pane fade show active" id="timeline" role="tabpanel">
+                    <!-- Formulário para adicionar comentário -->
+                    {% if denuncia.status != 'cancelada' and denuncia.status != 'tratada' %}
+                        <div class="card mb-3">
+                            <div class="card-body">
+                                <form method="post">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="add_comentario">
+                                    <div class="mb-3">
+                                        <label for="texto" class="form-label">Adicionar Comentário:</label>
+                                        <textarea class="form-control" id="texto" name="texto" rows="3" required></textarea>
+                                    </div>
+                                    <button type="submit" class="btn btn-success">Adicionar Comentário</button>
+                                </form>
+                            </div>
+                        </div>
+                    {% endif %}
+
+
+                    <!-- Lista de comentários -->
+                    {% for comentario in comentarios %}
+                        <div class="card mb-2">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <strong>{{ comentario.autor.get_full_name }}</strong>
+                                    <small class="text-muted">{{ comentario.data_criacao|date:"d/m/Y H:i" }}</small>
+                                </div>
+                                <p class="mb-0">{{ comentario.texto|linebreaks }}</p>
+                            </div>
+                        </div>
+                    {% empty %}
+                        <p class="text-muted">Nenhum comentário ainda.</p>
+                    {% endfor %}
+                </div>
+
+                <!-- Aba de Anexos -->
+                <div class="tab-pane fade" id="anexos" role="tabpanel">
+                    <!-- Formulário para adicionar anexo -->
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <form method="post" enctype="multipart/form-data">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="add_anexo">
+                                <div class="mb-3">
+                                    <label for="arquivo" class="form-label">Adicionar Anexo:</label>
+                                    <input type="file" class="form-control" id="arquivo" name="arquivo" required>
+                                </div>
+                                <button type="submit" class="btn btn-success">Adicionar Anexo</button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Lista de anexos -->
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Anexo</th>
+                                    <th>Anexado por</th>
+                                    <th>Data</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for anexo in anexos %}
+                                <tr>
+                                    <td>{{ forloop.counter }}</td>
+                                    <td>
+                                        <a href="{{ anexo.arquivo.url }}" target="_blank">
+                                            {{ anexo.nome }}
+                                        </a>
+                                    </td>
+                                    <td>{{ anexo.anexado_por.get_full_name }}</td>
+                                    <td>{{ anexo.data_anexo|date:"d/m/Y H:i" }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="text-center">Nenhum anexo encontrado.</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+            <!-- Histórico das Tratativas -->
             <div class="row mt-4">
                 <div class="col-12">
-                    <h5 class="card-title">Histórico de Tratativas</h5>
-                    <hr>
+                    <h5 class="card-title mb-3">Histórico de Tratativas</h5>
+
                     {% if tratativas %}
                         <div class="list-group">
                             {% for tratativa in tratativas %}
                                 <div class="list-group-item">
                                     <div class="d-flex w-100 justify-content-between">
                                         <h6 class="mb-1">{{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}</h6>
-<!--                                        <small>{{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>-->
                                     </div>
                                     <p class="mb-1">{{ tratativa.descricao }}</p>
                                     <small>Status de tratativa alterado de {{ tratativa.get_status_anterior_display }} para
@@ -165,82 +219,6 @@
     </div>
 </main>
 
-<style>
-    .action-group {
-        display: flex;
-        gap: 8px;
-        align-items: center;
-    }
-
-    .action-btn {
-        width: 36px;
-        height: 36px;
-        border-radius: 50%;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-        border: none;
-        cursor: pointer;
-        color: white;
-        margin: 0;
-        padding: 0;
-        transition: all 0.2s ease;
-        text-decoration: none;
-        position: relative;
-    }
-
-    .action-btn i {
-        font-size: 16px;
-        line-height: 1;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    .action-btn:hover {
-        transform: scale(1.1);
-        color: white;
-        text-decoration: none;
-    }
-
-    .edit-btn {
-        background-color: #2196F3;
-    }
-
-    .delete-btn {
-        background-color: #F44336;
-    }
-
-    .warning-btn {
-        background-color: #FFC107;
-    }
-
-    .dropdown-menu {
-        min-width: 200px;
-        padding: 8px 0;
-        margin: 0;
-        border-radius: 4px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    .dropdown-item {
-        padding: 8px 15px;
-        font-size: 14px;
-        color: #333;
-        transition: all 0.2s ease;
-    }
-
-    .dropdown-item:hover {
-        background-color: #f3f3f3;
-    }
-
-    .dropdown-item.active {
-        background-color: #4CAF50;
-        color: white;
-    }
-</style>
-
 {% block scripts_personalizados %}
 <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -253,4 +231,3 @@
 </script>
 {% endblock %}
 {% endblock %}
-

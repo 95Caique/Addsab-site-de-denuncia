@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from .enums import tipo_maus_tratos_choices, STATUS_DENUNCIA_CHOICES
 from django.utils.safestring import mark_safe
 from django.utils import timezone
+import os
 
 class Denuncia(models.Model):
     especie = models.CharField("Espécie do Animal", max_length=50)
@@ -100,3 +101,32 @@ class Tratativa(models.Model):
 
     def __str__(self):
         return f"Tratativa da denúncia {self.denuncia.id} por {self.atendente.get_full_name() or self.atendente.username}"
+
+class ComentarioDenuncia(models.Model):
+    denuncia = models.ForeignKey('Denuncia', on_delete=models.CASCADE, related_name='comentarios')
+    autor = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    texto = models.TextField()
+    data_criacao = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-data_criacao']
+
+    def __str__(self):
+        return f'Comentário de {self.autor.get_full_name()} em {self.data_criacao}'
+
+class AnexoDenuncia(models.Model):
+    denuncia = models.ForeignKey('Denuncia', on_delete=models.CASCADE, related_name='anexos')
+    arquivo = models.FileField(upload_to='anexos_denuncia/')
+    nome = models.CharField(max_length=255)
+    anexado_por = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    data_anexo = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ['-data_anexo']
+
+    def __str__(self):
+        return self.nome
+
+    @property
+    def nome_arquivo(self):
+        return os.path.basename(self.arquivo.name)
