@@ -1,36 +1,178 @@
 {% extends 'base.html' %}
+{% load static %}
+
 {% block title %}Painel Administrativo{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'style.css' %}">
+{% endblock %}
+
 {% block content %}
 <div class="container mt-5">
-<!--    <h2>Painel Administrativo</h2>-->
-    <a href="{% url 'adm:cadastrar_usuario' %}" class="btn btn-primary float-end me-2">Cadastrar Usuário</a>
-    <table class="table table-striped mt-4">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Espécie</th>
-                <th>Local</th>
-                <th>Status</th>
-                <th>Ações</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for denuncia in denuncias %}
-            <tr>
-                <td>#{{ denuncia.id }}</td>
-                <td>{{ denuncia.especie }}</td>
-                <td>{{ denuncia.local|default:"Não informado" }}</td>
-                <td>{{ denuncia.get_status_display }}</td>
-                <td>
-                    <a href="{% url 'denuncia-detalhe' denuncia.pk %}" class="btn btn-info btn-sm">Visualizar</a>
-                </td>
-            </tr>
-            {% empty %}
-            <tr>
-                <td colspan="5">Nenhuma denúncia encontrada.</td>
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+             role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Gerenciamento de Usuários</h2>
+        <a href="{% url 'adm:cadastrar_usuario' %}" class="btn btn-primary">
+            <i class="fas fa-user-plus"></i> Cadastrar Usuário
+        </a>
+    </div>
+
+    <div class="status-cards mb-5">
+        <div class="card clickable active" onclick="mostrarTabela('ativos')" id="card-ativos">
+            <div class="card-header">
+                <span class="card-title">Ativos</span>
+                <div class="card-icon icon-recebida2">
+                    <i class="fas fa-user-check"></i>
+                </div>
+            </div>
+            <div class="card-number">{{ ativos_count }}</div>
+            <div class="card-description">Usuários ativos no sistema</div>
+        </div>
+
+        <div class="card clickable" onclick="mostrarTabela('inativos')" id="card-inativos">
+            <div class="card-header">
+                <span class="card-title">Inativos</span>
+                <div class="card-icon icon-cancelada">
+                    <i class="fas fa-user-times"></i>
+                </div>
+            </div>
+            <div class="card-number">{{ inativos_count }}</div>
+            <div class="card-description">Usuários inativos no sistema</div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12 mb-4" id="tabela-ativos">
+            <h3>Usuários Ativos</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Usuário</th>
+                        <th>Função</th>
+                        <th>Último Acesso</th>
+                        <th>Data de Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for usuario in usuarios_ativos %}
+                    <tr>
+                        <td>{{ usuario.nome_completo }}</td>
+                        <td>{{ usuario.username }}</td>
+                        <td>
+                                <span class="badge {% if usuario.tipo == 'Gerente' %}bg-primary{% else %}bg-success{% endif %}">
+                                    {{ usuario.tipo }}
+                                </span>
+                        </td>
+                        <td>{{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</td>
+                        <td>{{ usuario.data_cadastro|date:"d/m/Y" }}</td>
+                        <td>
+                            <div class="btn-group">
+                                <button type="button" class="btn btn-sm btn-warning" title="Editar">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <form method="post" class="d-inline"
+                                      onsubmit="return confirm('Tem certeza que deseja desativar este usuário?');">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="action" value="desativar">
+                                    <input type="hidden" name="user_id" value="{{ usuario.username }}">
+                                    <button type="submit" class="btn btn-sm btn-danger" title="Desativar">
+                                        <i class="fas fa-user-slash"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhum usuário ativo encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="col-12 d-none" id="tabela-inativos">
+            <h3>Usuários Inativos</h3>
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                    <tr>
+                        <th>Nome</th>
+                        <th>Usuário</th>
+                        <th>Função</th>
+                        <th>Último Acesso</th>
+                        <th>Data de Cadastro</th>
+                        <th>Ações</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for usuario in usuarios_inativos %}
+                    <tr>
+                        <td>{{ usuario.nome_completo }}</td>
+                        <td>{{ usuario.username }}</td>
+                        <td>
+                            <span class="badge bg-secondary">{{ usuario.tipo }}</span>
+                        </td>
+                        <td>{{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</td>
+                        <td>{{ usuario.data_cadastro|date:"d/m/Y" }}</td>
+                        <td>
+                            <form method="post" class="d-inline"
+                                  onsubmit="return confirm('Tem certeza que deseja reativar este usuário?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="reativar">
+                                <input type="hidden" name="user_id" value="{{ usuario.username }}">
+                                <button type="submit" class="btn btn-sm btn-success" title="Reativar">
+                                    <i class="fas fa-user-check"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center">Nenhum usuário inativo encontrado.</td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
 </div>
+
+{% block scripts_personalizados %}
+<script>
+    function mostrarTabela(tipo) {
+        // Atualizar cards
+        document.getElementById('card-ativos').classList.remove('active');
+        document.getElementById('card-inativos').classList.remove('active');
+        document.getElementById('card-' + tipo).classList.add('active');
+
+        // Atualizar visibilidade das tabelas
+        document.getElementById('tabela-ativos').classList.add('d-none');
+        document.getElementById('tabela-inativos').classList.add('d-none');
+        document.getElementById('tabela-' + tipo).classList.remove('d-none');
+    }
+
+    // Inicializar com a tabela de ativos visível
+    document.addEventListener('DOMContentLoaded', function() {
+        mostrarTabela('ativos');
+    });
+</script>
+{% endblock %}
+
 {% endblock %}

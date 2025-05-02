@@ -38,194 +38,8 @@ body {
 .status-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 2rem;
-}
-
-.status-cards a {
-    text-decoration: none;
-    color: inherit;
-}
-
-.status-cards .card {
-    background: white;
-    border-radius: 20px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    transition: transform 0.3s ease, box-shadow 0.3s ease;
-    border: none;
-}
-
-.status-cards .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.card-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 1rem;
-}
-
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.card-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.icon-recebida {
-    background-color: #ffc107;
-}
-.icon-recebida2 {
-    background-color: #28a745;
-}
-
-.icon-processando {
-    background-color: var(--info-color);
-}
-
-.icon-tratada {
-    background-color: #28a745;
-}
-
-.icon-cancelada {
-    background-color: var(--danger-color);
-}
-
-.card-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin: 1rem 0;
-    color: var(--text-dark);
-}
-
-.card-description {
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
-
-/* Estilos para a tabela de denúncias */
-.denuncias-table {
-    width: 100%;
-    background: white;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin-top: 2rem;
-    border-collapse: collapse;
-}
-
-.denuncias-table th {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    text-align: left;
-    font-weight: 600;
-    color: var(--text-dark);
-    border-bottom: 2px solid var(--border-color);
-}
-
-.denuncias-table td {
-    padding: 1rem;
-    border-bottom: 1px solid var(--border-color);
-    color: var(--text-dark);
-}
-
-.denuncias-table tr:hover {
-    background-color: #f8f9fa;
-}
-
-/* Estilos para os botões de ação */
-.actions {
-    white-space: nowrap;
-}
-
-.action-group {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.action-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    text-decoration: none;
-}
-
-.action-btn:hover {
-    transform: scale(1.1);
-    color: white;
-}
-
-.view-btn {
-    background-color: var(--success-color);
-}
-
-.edit-btn {
-    background-color: var(--warning-color);
-}
-
-.delete-btn {
-    background-color: var(--danger-color);
-}
-
-/* Estilos para o dropdown */
-.dropdown-menu {
-    min-width: 200px;
-    padding: 0.5rem 0;
-    margin: 0.125rem 0 0;
-    border: 1px solid var(--border-color);
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.dropdown-item {
-    padding: 0.5rem 1rem;
-    color: var(--text-dark);
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-    background-color: #f8f9fa;
-    color: var(--text-dark);
-}
-
-.dropdown-item.active {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .status-cards {
-        grid-template-columns: 1fr;
-    }
-
-    .denuncias-table {
-        display: block;
-        overflow-x: auto;
-    }
-
-    .action-group {
-        flex-wrap: nowrap;
-    }
 }
 
 .card {
@@ -245,6 +59,43 @@ body {
 
 .card.active {
     border: 2px solid #007bff;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: none;
+}
+
+.card-icon {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+}
+
+.icon-recebida {
+    background-color: #28a745;
+}
+
+.icon-cancelada {
+    background-color: #dc3545;
+}
+
+.card-number {
+    font-size: 2rem;
+    font-weight: bold;
+    padding: 0.5rem 1rem;
+}
+
+.card-description {
+    color: #6c757d;
+    padding: 0.5rem 1rem 1rem;
 }
 
 .btn-group {
@@ -649,42 +500,5 @@ main {
         flex-direction: row;
         gap: 5px;
     }
-}
-
-/* Estilos para os badges de status */
-.status-badge {
-    padding: 0.5em 1em;
-    font-size: 0.85em;
-    font-weight: 600;
-    border-radius: 50px;
-    text-transform: capitalize;
-    display: inline-block;
-    min-width: 100px;
-    text-align: center;
-}
-
-.badge-recebida {
-    background-color: #ffc107;
-    color: white;
-}
-
-.badge-processando {
-    background-color: var(--info-color);
-    color: white;
-}
-
-.badge-tratada {
-    background-color: #28a745;
-    color: white;
-}
-
-.badge-cancelada {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-/* Estilo específico para o número no card de Recebidas */
-.status-cards a:first-child .card-number {
-    color: #FF6347;
 }
 
