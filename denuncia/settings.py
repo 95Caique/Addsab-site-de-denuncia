@@ -25,7 +25,14 @@ SECRET_KEY = 'django-insecure-86k*#wa=z@om1#*c=pqyo176ven7ut=19m+sivsoqk3k#^3ka0
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
+
+ALLOWED_HOSTS = [host.split(':')[0] for host in ALLOWED_HOSTS]
+
+# Se DEBUG está ativado, podemos adicionar '*' para aceitar qualquer host durante desenvolvimento
+if os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't'):
+    ALLOWED_HOSTS.append('*')
 
 
 INSTALLED_APPS = [
@@ -69,16 +76,25 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'denuncia.wsgi.application'
 
-# Database
-# https://docs.djangoproject.com/en/4.2/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+if os.environ.get('USE_SQLITE', 'False').lower() in ('true', '1', 't'):
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        }
     }
-}
-
+else:
+    # Configuração do PostgreSQL (mantida para uso futuro)
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ.get('POSTGRES_DB', 'django_db'),
+            'USER': os.environ.get('POSTGRES_USER', 'django_user'),
+            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'django_pass'),
+            'HOST': os.environ.get('POSTGRES_HOST', 'db'),
+            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+        }
+    }
 
 
 AUTH_PASSWORD_VALIDATORS = [

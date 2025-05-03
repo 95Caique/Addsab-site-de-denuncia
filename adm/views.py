@@ -52,6 +52,7 @@ def painel_adm(request):
     usuarios_ativos = User.objects.filter(is_active=True).exclude(is_superuser=True)
     usuarios_inativos = User.objects.filter(is_active=False).exclude(is_superuser=True)
 
+    # Preparar listas com informações detalhadas dos usuários
     ativos_info = []
     for usuario in usuarios_ativos:
         tipo = 'Gerente' if usuario.groups.filter(name='Gerente').exists() else 'Atendente'

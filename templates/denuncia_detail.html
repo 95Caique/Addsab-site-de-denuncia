@@ -88,13 +88,14 @@
                         {% csrf_token %}
                         <input type="hidden" name="action" value="update_status">
                                 <p><strong>Status:</strong> <span class="badge badge-{{ denuncia.status }}">{{ denuncia.get_status_display }}</span></p>
-                        <div class="input-group mb-2">
-                            <select name="status" class="form-select" required>
+                        <div class="input-group mb-2 d-flex">
+                            <select name="status" class="form-select me-2" required>
                                 {% for status_code, status_name in status_choices %}
                                     <option value="{{ status_code }}" {% if denuncia.status == status_code %}selected{% endif %}>{{ status_name }}</option>
                                 {% endfor %}
                             </select>
-                            <button type="submit" class="btn btn-success">Atualizar Status</button>
+                            <button type="submit" class="btn btn-success rounded-pill ms-auto">Atualizar Status</button>
+                        </div>
                         </div>
                     </form>
                 </div>
@@ -102,7 +103,6 @@
 
             <div class="tab-content" id="denunciaTabContent">
                 <div class="tab-pane fade show active" id="timeline" role="tabpanel">
-                    <!-- Formulário para adicionar comentário -->
                     {% if denuncia.status != 'cancelada' and denuncia.status != 'tratada' %}
                         <div class="card mb-3">
                             <div class="card-body">
@@ -120,6 +120,7 @@
                     {% endif %}
 
 
+                    <h5 class="card-title mt-3 mb-3">Comentários</h5>
                     <!-- Lista de comentários -->
                     {% for comentario in comentarios %}
                         <div class="card mb-2">
