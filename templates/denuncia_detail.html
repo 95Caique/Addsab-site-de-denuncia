@@ -23,16 +23,16 @@
         {% endif %}
 
 
-    <div class="card-body">
+        <div class="card-body">
         <div class="row">
             <div class="col-md-6 mt-3">
                 <h5 class="card-title">Informações do Animal</h5>
                 <hr>
                 <p><strong>Espécie:</strong> {{ denuncia.especie }}</p>
                 <p><strong>Nome:</strong> {{ denuncia.nome|default:"Não informado" }}</p>
-                <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>
-                <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>
-                <p><strong>Descrição:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>
+<!--                <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>-->
+<!--                <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>-->
+<!--                <p><strong>Descrição:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>-->
             </div>
 
             <div class="col-md-6 mt-3">
@@ -199,11 +199,12 @@
                             {% for tratativa in tratativas %}
                                 <div class="list-group-item">
                                     <div class="d-flex w-100 justify-content-between">
-                                        <h6 class="mb-1">{{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}</h6>
+<!--                                        <h6 class="mb-1">{{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}</h6>-->
                                     </div>
                                     <p class="mb-1">{{ tratativa.descricao }}</p>
                                     <small>Status de tratativa alterado de {{ tratativa.get_status_anterior_display }} para
-                                        {{ tratativa.get_status_novo_display }} as {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>
+                                        {{ tratativa.get_status_novo_display }} por {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}
+                                        as {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>
                                 </div>
                             {% endfor %}
                         </div>

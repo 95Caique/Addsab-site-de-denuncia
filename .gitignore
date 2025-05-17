@@ -10,3 +10,5 @@ venv/
 
 # Ignorar qualquer pasta ou arquivo chamada db.sqlite3 em subdiretórios
 
+.env
+.env.example

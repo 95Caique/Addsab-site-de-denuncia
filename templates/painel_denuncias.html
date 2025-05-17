@@ -4,7 +4,7 @@
 
 
 {% block content %}
-<div class="container">
+    <div class="container">
     {% if messages %}
     <div class="alert alert-info alert-dismissible fade show" role="alert">
         {% for message in messages %}
@@ -39,24 +39,24 @@
     </div>
 
 
-    <div class="status-cards">
+        <div class="status-cards">
         <a href="{% url 'painel_denuncias' %}?status=recebida">
-            <div class="card">
-                <div class="card-header">
-                    <span class="card-title">Recebidas</span>
-                    <div class="card-icon icon-recebida">
-                        <i class="fas fa-inbox"></i>
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Recebidas</h5>
+                        <div class="card-icon icon-recebida">
+                            <i class="fas fa-inbox"></i>
+                        </div>
                     </div>
+                    <div class="card-number">{{ recebidas_count }}</div>
+                    <div class="card-description">Denúncias recebidas com sucesso no sistema.</div>
                 </div>
-                <div class="card-number">{{ recebidas_count }}</div>
-                <div class="card-description">Denúncias recebidas com sucesso no sistema.</div>
-            </div>
-        </a>
+            </a>
 
         <a href="{% url 'painel_denuncias' %}?status=processando">
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">Processando</span>
+                        <h5>Processando</h5>
                     <div class="card-icon icon-processando">
                         <i class="fas fa-clock"></i>
                     </div>
@@ -69,7 +69,7 @@
         <a href="{% url 'painel_denuncias' %}?status=tratada">
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">Tratadas</span>
+                        <h5>Tratadas</h5>
                     <div class="card-icon icon-tratada">
                         <i class="fas fa-check-double"></i>
                     </div>
@@ -82,7 +82,7 @@
         <a href="{% url 'painel_denuncias' %}?status=cancelada">
             <div class="card">
                 <div class="card-header">
-                    <span class="card-title">Canceladas</span>
+                        <h5>Canceladas</h5>
                     <div class="card-icon icon-cancelada">
                         <i class="fas fa-times"></i>
                     </div>
@@ -91,36 +91,36 @@
                 <div class="card-description">Denúncias que foram canceladas ou rejeitadas.</div>
             </div>
         </a>
-    </div>
+        </div>
 
-    <h2>Lista de Denúncias</h2>
-    <table class="denuncias-table">
-        <thead>
-        <tr>
-            <th>ID</th>
-            <th>Espécie</th>
+        <h2>Lista de Denúncias</h2>
+        <table class="denuncias-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Espécie</th>
             <th>Endereço</th>
             <th>Data de Registro</th>
-            <th>Status</th>
-            <th>Ações</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for denuncia in denuncias %}
-        <tr>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for denuncia in denuncias %}
+                <tr>
             <td>{{ denuncia.id }}</td>
-            <td>{{ denuncia.especie }}</td>
-            <td>{{ denuncia.local|default:"Não informado" }}</td>
-            <td>{{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</td>
-            <td>
-                    <span class="status-badge badge-{{ denuncia.status }}">
-                        {{ denuncia.get_status_display }}
-                    </span>
-            </td>
-            <td class="actions">
+                    <td>{{ denuncia.especie }}</td>
+                    <td>{{ denuncia.local|default:"Não informado" }}</td>
+                    <td>{{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</td>
+                    <td>
+                        <span class="status-badge badge-{{ denuncia.status }}">
+                            {{ denuncia.get_status_display }}
+                        </span>
+                    </td>
+                    <td class="actions">
                 <div class="action-group">
                     <a href="{% url 'denuncia-detalhe' denuncia.pk %}" class="action-btn view-btn" title="Visualizar">
-                        <i class="fas fa-eye"></i>
+                                <i class="fas fa-eye"></i>
                     </a>
 
                     <div class="dropdown">
@@ -139,7 +139,7 @@
                                     <button type="submit"
                                             class="dropdown-item {% if denuncia.status == status_code %}active{% endif %}">
                                         {{ status_name }}
-                                    </button>
+                            </button>
                                 </form>
                             </li>
                             {% endfor %}
@@ -156,26 +156,26 @@
                         </button>
                     </form>
                 </div>
-            </td>
-        </tr>
-        {% empty %}
-        <tr>
-            <td colspan="6" style="text-align: center;">Nenhuma denúncia encontrada.</td>
-        </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-</div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align: center;">Nenhuma denúncia encontrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
 
 {% block scripts_personalizados %}
-<script>
+    <script>
     document.addEventListener('DOMContentLoaded', function() {
         // Inicializar todos os dropdowns
         var dropdowns = document.querySelectorAll('[data-bs-toggle="dropdown"]');
         dropdowns.forEach(function(dropdownToggle) {
             new bootstrap.Dropdown(dropdownToggle);
         });
-    });
-</script>
+        });
+    </script>
 {% endblock %}

@@ -1,33 +1,29 @@
-# Dockerfile para Django
-FROM python:3.10-slim
+FROM python:3.9-alpine3.13
 
-# Variáveis de ambiente para não gerar .pyc e buffer de logs
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
+# Copia os arquivos necessários
+COPY ./requirements.txt /tmp/requirements.txt
+COPY . /app
 
-# Diretório de trabalho
+# Define o diretório de trabalho
 WORKDIR /app
 
-# Instalar dependências do sistema
-RUN apt-get update && apt-get install -y \
-    build-essential \
-    sqlite3 \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
-
-# Copiar apenas o requirements primeiro para aproveitar o cache do Docker
-COPY requirements.txt .
-RUN pip install --no-cache-dir --upgrade pip && \
-    pip install --no-cache-dir -r requirements.txt
-
-# Criar diretórios para arquivos estáticos e de mídia
-RUN mkdir -p /app/staticfiles /app/media
-
-# Copiar o projeto
-COPY . .
-
-# Expor a porta 8000
+# Expõe a porta padrão do Django
 EXPOSE 8000
 
-# Comando padrão: desenvolvimento local
-CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
+# Instala dependências e cria ambiente virtual
+RUN python -m venv /py && \
+    /py/bin/pip install --upgrade pip && \
+    apk add --update --no-cache postgresql-client && \
+    apk add --update --no-cache --virtual .tmp-build-deps \
+        build-base postgresql-dev musl-dev && \
+    /py/bin/pip install -r /tmp/requirements.txt && \
+    rm -rf /tmp && \
+    apk del .tmp-build-deps && \
+    adduser \
+        --disabled-password \
+        --no-create-home \
+        django-user
+
+# Define o PATH e o usuário não-root
+ENV PATH="/py/bin:$PATH"
+USER django-user

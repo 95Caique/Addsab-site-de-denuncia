@@ -11,14 +11,11 @@
     --box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-}
-
+--------------------------------ATIVO---------------------------------------
 body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
     background-color: #f8f9fa;
     color: var(--text-dark);
 }
@@ -29,12 +26,6 @@ body {
     padding: 20px;
 }
 
-.subtitle {
-    font-size: 16px;
-    color: var(--text-light);
-    margin-bottom: 20px;
-}
-
 .status-cards {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -42,11 +33,25 @@ body {
     margin-bottom: 2rem;
 }
 
+
+___________________________________Cards _______________________________________
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
 .status-cards a {
     text-decoration: none;
     color: inherit;
 }
 
+/* Estilo específico para o número no card de Recebidas */
+.status-cards a:first-child .card-number {
+    color: #FF6347;
+}
 .status-cards .card {
     background: white;
     border-radius: 20px;
@@ -56,11 +61,6 @@ body {
     border: none;
 }
 
-.status-cards .card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
 .card-header {
     display: flex;
     align-items: center;
@@ -68,25 +68,6 @@ body {
     margin-bottom: 1rem;
 }
 
-.card-title {
-    font-size: 1.1rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-
-.card-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-}
-
-.icon-recebida {
-    background-color: #28a745;
-}
 .icon-recebida2 {
     background-color: #28a745;
 }
@@ -104,30 +85,16 @@ body {
     background-color: var(--danger-color);
 }
 
-.card-number {
-    font-size: 2.5rem;
-    font-weight: bold;
-    margin: 1rem 0;
-    color: var(--text-dark);
-}
 
-.card-description {
-    color: var(--text-light);
-    font-size: 0.9rem;
-}
 
 /* Estilos para a tabela de denúncias */
 .denuncias-table {
     width: 100%;
-    background: white;
-    border-radius: 10px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     margin-top: 2rem;
-    border-collapse: collapse;
 }
 
 .denuncias-table th {
-    background-color: #f8f9fa;
     padding: 1rem;
     text-align: left;
     font-weight: 600;
@@ -139,78 +106,6 @@ body {
     padding: 1rem;
     border-bottom: 1px solid var(--border-color);
     color: var(--text-dark);
-}
-
-.denuncias-table tr:hover {
-    background-color: #f8f9fa;
-}
-
-/* Estilos para os botões de ação */
-.actions {
-    white-space: nowrap;
-}
-
-.action-group {
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-
-.action-btn {
-    width: 32px;
-    height: 32px;
-    border-radius: 50%;
-    border: none;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    color: white;
-    cursor: pointer;
-    transition: transform 0.2s ease;
-    text-decoration: none;
-}
-
-.action-btn:hover {
-    transform: scale(1.1);
-    color: white;
-}
-
-.view-btn {
-    background-color: var(--success-color);
-}
-
-.edit-btn {
-    background-color: var(--warning-color);
-}
-
-.delete-btn {
-    background-color: var(--danger-color);
-}
-
-/* Estilos para o dropdown */
-.dropdown-menu {
-    min-width: 200px;
-    padding: 0.5rem 0;
-    margin: 0.125rem 0 0;
-    border: 1px solid var(--border-color);
-    border-radius: 0.25rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.dropdown-item {
-    padding: 0.5rem 1rem;
-    color: var(--text-dark);
-}
-
-.dropdown-item:hover,
-.dropdown-item:focus {
-    background-color: #f8f9fa;
-    color: var(--text-dark);
-}
-
-.dropdown-item.active {
-    background-color: var(--primary-color);
-    color: white;
 }
 
 /* Responsividade */
@@ -229,33 +124,6 @@ body {
     }
 }
 
-.card {
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.card.clickable {
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.card.clickable:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-}
-
-.card.active {
-    border: 2px solid #007bff;
-}
-
-.btn-group {
-    display: flex;
-    gap: 0.25rem;
-}
-
-.table {
-    margin-bottom: 2rem;
-}
 
 .badge {
     padding: 0.5em 0.75em;
@@ -461,11 +329,7 @@ html, body {
     margin: 0;
 }
 
-body {
-    display: flex;
-    flex-direction: column;
-    min-height: 100vh;
-}
+
 
 main {
     flex-grow: 1;
@@ -687,6 +551,11 @@ main {
 /* Estilo específico para o número no card de Recebidas */
 .status-cards a:first-child .card-number {
     color: #FF6347;
+}
+.required::before {
+    content: "*";
+    color: red;
+    margin-right: 4px;
 }
 
 .action-group {

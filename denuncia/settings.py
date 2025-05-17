@@ -20,21 +20,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-86k*#wa=z@om1#*c=pqyo176ven7ut=19m+sivsoqk3k#^3ka0'
+SECRET_KEY = os.getenv('SECRET_KEY', 'django-insecure-your-default-secret-key')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'True') == 'True'
 
-ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
-ALLOWED_HOSTS = [host.strip() for host in ALLOWED_HOSTS]
+ALLOWED_HOSTS = ['*']
 
-ALLOWED_HOSTS = [host.split(':')[0] for host in ALLOWED_HOSTS]
-
-# Se DEBUG está ativado, podemos adicionar '*' para aceitar qualquer host durante desenvolvimento
-if os.environ.get('DEBUG', 'False').lower() in ('true', '1', 't'):
-    ALLOWED_HOSTS.append('*')
-
-
+# Application definition
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
@@ -76,26 +69,29 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'denuncia.wsgi.application'
 
-if os.environ.get('USE_SQLITE', 'False').lower() in ('true', '1', 't'):
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-        }
-    }
-else:
-    # Configuração do PostgreSQL (mantida para uso futuro)
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.postgresql',
-            'NAME': os.environ.get('POSTGRES_DB', 'django_db'),
-            'USER': os.environ.get('POSTGRES_USER', 'django_user'),
-            'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'django_pass'),
-            'HOST': os.environ.get('POSTGRES_HOST', 'db'),
-            'PORT': os.environ.get('POSTGRES_PORT', '5432'),
-        }
-    }
+# Database
 
+# if os.environ.get('USE_SQLITE', 'False').lower() in ('true', '1', 't'):
+
+# }
+# else:
+#     # Configuração do PostgreSQL (mantida para uso futuro)
+#     DATABASES = {
+#         'default': {
+#             'ENGINE': 'django.db.backends.postgresql',
+#             'NAME': os.environ.get('POSTGRES_DB', 'django_db'),
+#             'USER': os.environ.get('POSTGRES_USER', 'django_user'),
+#             'PASSWORD': os.environ.get('POSTGRES_PASSWORD', 'django_pass'),
+#             'HOST': os.environ.get('POSTGRES_HOST', 'db'),
+#             'PORT': os.environ.get('POSTGRES_PORT', '5432'),
+#         }
+#     }
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+    }
+}
 
 AUTH_PASSWORD_VALIDATORS = [
     {
@@ -112,25 +108,27 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
-
-LANGUAGE_CODE = 'pt-BR'
-TIME_ZONE = 'America/Fortaleza'
+# Internationalization
+LANGUAGE_CODE = 'pt-br'
+TIME_ZONE = 'America/Sao_Paulo'
 USE_I18N = True
 USE_TZ = True
 
-
-STATIC_URL = '/static/'
+# Static files (CSS, JavaScript, Images)
+STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATICFILES_DIRS = [
-    BASE_DIR / 'static',
+    os.path.join(BASE_DIR, 'static'),
 ]
-STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Media files
 MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-LOGIN_URL = '/login/'
-LOGIN_REDIRECT_URL = '/painel_denuncias/'
-LOGOUT_REDIRECT_URL = '/'
-
+# Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login settings
+LOGIN_URL = 'login'
+LOGIN_REDIRECT_URL = 'painel_denuncias'
+LOGOUT_REDIRECT_URL = 'login'
