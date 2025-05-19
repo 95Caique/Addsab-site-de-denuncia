@@ -24,7 +24,6 @@ class Denuncia(models.Model):
     data_denuncia = models.DateTimeField("Data da Denúncia", auto_now_add=True)
     status = models.CharField("Status", max_length=20, choices=STATUS_DENUNCIA_CHOICES, default='recebida')
     
-    # Novos campos para controle de atendimento
     atendente_responsavel = models.ForeignKey(
         User,
         verbose_name="Atendente Responsável",

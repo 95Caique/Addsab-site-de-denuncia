@@ -16,7 +16,7 @@
 
         {% if denuncia.imagens %}
             <img src="{{ denuncia.imagens.url }}" alt="Imagem da denúncia" class="card-img-top"
-                 style="width: 100%; max-height: 600px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+                 style="width: 100%; max-height: 2000px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
         {% else %}
             <img src="{% static 'images/imagem-padrao.jpg' %}" alt="Imagem padrão" class="card-img-top"
                  style="width: 100%; max-height: 600px; object-fit: cover; border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
@@ -32,7 +32,7 @@
                 <p><strong>Nome:</strong> {{ denuncia.nome|default:"Não informado" }}</p>
 <!--                <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>-->
 <!--                <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>-->
-<!--                <p><strong>Descrição:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>-->
+                <p><strong>Descrição do Animal:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>
             </div>
 
             <div class="col-md-6 mt-3">
@@ -103,7 +103,7 @@
 
             <div class="tab-content" id="denunciaTabContent">
                 <div class="tab-pane fade show active" id="timeline" role="tabpanel">
-                    {% if denuncia.status != 'cancelada' and denuncia.status != 'tratada' %}
+                    {% if denuncia.status != 'cancelada' and denuncia.status != 'tratada' and denuncia.status != 'recebida' %}
                         <div class="card mb-3">
                             <div class="card-body">
                                 <form method="post">
@@ -190,23 +190,24 @@
         </div>
 
             <!-- Histórico das Tratativas -->
-            <div class="row mt-4">
+           <div class="row mt-4">
                 <div class="col-12">
-                    <h5 class="card-title mb-3">Histórico de Tratativas</h5>
-
+                    <a href="#collapseTratativas" data-toggle="collapse" role="button" aria-expanded="false"
+                       aria-controls="collapseTratativas" class="text-dark text-decoration-none">
+                        <h5 class="card-title mb-3">Histórico de Tratativas</h5>
+                    </a>
                     {% if tratativas %}
-                        <div class="list-group">
-                            {% for tratativa in tratativas %}
-                                <div class="list-group-item">
-                                    <div class="d-flex w-100 justify-content-between">
-<!--                                        <h6 class="mb-1">{{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}</h6>-->
+                        <div class="collapse" id="collapseTratativas">
+                            <div class="list-group">
+                                {% for tratativa in tratativas %}
+                                    <div class="list-group-item">
+                                        <p class="mb-1">{{ tratativa.descricao }}</p>
+                                        <small>Status de tratativa alterado de {{ tratativa.get_status_anterior_display }} para
+                                            {{ tratativa.get_status_novo_display }} por {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}
+                                            às {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>
                                     </div>
-                                    <p class="mb-1">{{ tratativa.descricao }}</p>
-                                    <small>Status de tratativa alterado de {{ tratativa.get_status_anterior_display }} para
-                                        {{ tratativa.get_status_novo_display }} por {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}
-                                        as {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>
-                                </div>
-                            {% endfor %}
+                                {% endfor %}
+                            </div>
                         </div>
                     {% else %}
                         <p>Nenhuma tratativa registrada.</p>
@@ -220,6 +221,8 @@
         </div>
     </div>
 </main>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
 {% block scripts_personalizados %}
 <script>

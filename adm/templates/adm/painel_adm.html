@@ -73,9 +73,9 @@
                         <td>{{ usuario.nome_completo }}</td>
                         <td>{{ usuario.username }}</td>
                         <td>
-                                <span class="badge {% if usuario.tipo == 'Gerente' %}bg-primary{% else %}bg-success{% endif %}">
-                                    {{ usuario.tipo }}
-                                </span>
+                            <span class="badge {% if usuario.tipo == 'Gerente' %}bg-primary{% else %}bg-success{% endif %}">
+                                {{ usuario.tipo }}
+                            </span>
                         </td>
                         <td>{{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</td>
                         <td>{{ usuario.data_cadastro|date:"d/m/Y" }}</td>
