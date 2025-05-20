@@ -12,3 +12,7 @@ venv/
 
 .env
 .env.example
+
+# Ignorar arquivos compilados do Python
+__pycache__/
+*.py[cod]

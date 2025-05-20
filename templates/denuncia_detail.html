@@ -203,8 +203,8 @@
                                     <div class="list-group-item">
                                         <p class="mb-1">{{ tratativa.descricao }}</p>
                                         <small>Status de tratativa alterado de {{ tratativa.get_status_anterior_display }} para
-                                            {{ tratativa.get_status_novo_display }} por {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }}
-                                            às {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}</small>
+                                            {{ tratativa.get_status_novo_display }} as {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}
+                                        </small>
                                     </div>
                                 {% endfor %}
                             </div>

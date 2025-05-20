@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% load widget_tweaks %}
+
+{% block title %}Editar Usuário{% endblock %}
+{% block content %}
+<div class="container mt-5">
+    <h2>Editar Perfil de {{ usuario.username }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.non_field_errors }}
+        <div class="mb-3">
+            <label for="id_first_name" class="form-label">Nome</label>
+            {{ form.first_name|add_class:'form-control' }}
+            {{ form.first_name.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="id_last_name" class="form-label">Sobrenome</label>
+            {{ form.last_name|add_class:'form-control' }}
+            {{ form.last_name.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="id_email" class="form-label">Email</label>
+            {{ form.email|add_class:'form-control' }}
+            {{ form.email.errors }}
+        </div>
+        <div class="mb-3">
+            <label for="id_tipo" class="form-label">Tipo de Usuário</label>
+            {{ form.tipo|add_class:'form-control' }}
+            {{ form.tipo.errors }}
+        </div>
+        <button type="submit" class="btn btn-success">Salvar Alterações</button>
+        <a href="{% url 'adm:painel_adm' %}" class="btn btn-secondary ms-2">Cancelar</a>
+    </form>
+</div>
+{% endblock %}
