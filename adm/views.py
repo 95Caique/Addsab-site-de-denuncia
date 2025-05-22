@@ -2,82 +2,140 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from comum.models import Denuncia
+from django.urls import reverse
+
 
 def is_gerente(user):
     return user.is_authenticated and user.groups.filter(name='Gerente').exists()
 
+
 def is_atendente(user):
     return user.is_authenticated and user.groups.filter(name='Atendente').exists()
 
-# @user_passes_test(is_gerente)
+
+@user_passes_test(is_gerente)
 def cadastrar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
         password = request.POST.get('password')
         tipo = request.POST.get('tipo')  # 'gerente' ou 'atendente'
-        if username and password and tipo:
+
+        if not all([username, password, tipo]):
+            messages.error(request, 'Preencha todos os campos.')
+            return redirect('adm:cadastrar_usuario')
+
+        try:
             user = User.objects.create_user(username=username, password=password)
-            grupo = Group.objects.get(name='Gerente' if tipo == 'gerente' else 'Atendente')
+            grupo_nome = 'Gerente' if tipo == 'gerente' else 'Atendente'
+            grupo, created = Group.objects.get_or_create(name=grupo_nome)
             user.groups.add(grupo)
             messages.success(request, f'Usuário {username} foi criado com sucesso!')
             return redirect('adm:painel_adm')
-        else:
-            messages.error(request, 'Preencha todos os campos.')
+        except Exception as e:
+            messages.error(request, f'Erro ao criar usuário: {str(e)}')
             return redirect('adm:cadastrar_usuario')
+
     return render(request, 'adm/cadastrar_usuario.html')
 
-# @login_required
+
+@login_required
+def editar_usuario(request, username):
+    try:
+        usuario = User.objects.get(username=username)
+
+        if request.method == 'POST':
+            novo_username = request.POST.get('username')
+            password = request.POST.get('password')
+            tipo = request.POST.get('tipo')
+
+            if not all([novo_username, tipo]):
+                messages.error(request, 'Preencha todos os campos obrigatórios.')
+                return redirect('adm:editar_usuario', username=username)
+
+            try:
+                # Atualizar username se foi alterado
+                if novo_username != username:
+                    usuario.username = novo_username
+
+                # Atualizar senha se fornecida
+                if password:
+                    usuario.set_password(password)
+
+                # Atualizar grupo
+                usuario.groups.clear()
+                grupo_nome = 'Gerente' if tipo == 'gerente' else 'Atendente'
+                grupo, created = Group.objects.get_or_create(name=grupo_nome)
+                usuario.groups.add(grupo)
+
+                usuario.save()
+                messages.success(request, f'Usuário {novo_username} atualizado com sucesso!')
+                return redirect('adm:painel_adm')
+            except Exception as e:
+                messages.error(request, f'Erro ao atualizar usuário: {str(e)}')
+
+        # Determinar tipo atual do usuário
+        tipo_atual = 'gerente' if usuario.groups.filter(name='Gerente').exists() else 'atendente'
+
+        context = {
+            'usuario': usuario,
+            'tipo_atual': tipo_atual
+        }
+        return render(request, 'adm/editar_usuario.html', context)
+
+    except User.DoesNotExist:
+        messages.error(request, 'Usuário não encontrado.')
+        return redirect('adm:painel_adm')
+
+
+@login_required
 def painel_adm(request):
     if request.method == 'POST':
         action = request.POST.get('action')
         user_id = request.POST.get('user_id')
-        
+
         if user_id and action in ['desativar', 'reativar']:
             try:
                 usuario = User.objects.get(username=user_id)
+
                 if action == 'desativar':
                     usuario.is_active = False
-                    messages.success(request, f'Usuário {usuario.username} foi desativado com sucesso.')
-                else:
+                    msg = f'Usuário {usuario.username} foi desativado com sucesso.'
+                else:  # reativar
                     usuario.is_active = True
-                    messages.success(request, f'Usuário {usuario.username} foi reativado com sucesso.')
+                    msg = f'Usuário {usuario.username} foi reativado com sucesso.'
+
                 usuario.save()
-                return redirect('adm:painel_adm')
+                messages.success(request, msg)
+
             except User.DoesNotExist:
                 messages.error(request, 'Usuário não encontrado.')
-                return redirect('adm:painel_adm')
-    
-    usuarios_ativos = User.objects.filter(is_active=True).exclude(is_superuser=True)
-    usuarios_inativos = User.objects.filter(is_active=False).exclude(is_superuser=True)
 
-    ativos_info = []
-    for usuario in usuarios_ativos:
+    # Obter todos os usuários (excluindo superusuários)
+    usuarios = User.objects.exclude(is_superuser=True)
+
+    # Processar usuários ativos e inativos
+    usuarios_info = {
+        'ativos': [],
+        'inativos': []
+    }
+
+    for usuario in usuarios:
         tipo = 'Gerente' if usuario.groups.filter(name='Gerente').exists() else 'Atendente'
-        ativos_info.append({
+        usuario_info = {
             'username': usuario.username,
             'nome_completo': usuario.get_full_name() or usuario.username,
             'tipo': tipo,
             'ultimo_login': usuario.last_login,
             'data_cadastro': usuario.date_joined
-        })
+        }
 
-    inativos_info = []
-    for usuario in usuarios_inativos:
-        tipo = 'Gerente' if usuario.groups.filter(name='Gerente').exists() else 'Atendente'
-        inativos_info.append({
-            'username': usuario.username,
-            'nome_completo': usuario.get_full_name() or usuario.username,
-            'tipo': tipo,
-            'ultimo_login': usuario.last_login,
-            'data_cadastro': usuario.date_joined
-        })
+        status = 'ativos' if usuario.is_active else 'inativos'
+        usuarios_info[status].append(usuario_info)
 
     context = {
-        'usuarios_ativos': ativos_info,
-        'usuarios_inativos': inativos_info,
-        'ativos_count': len(ativos_info),
-        'inativos_count': len(inativos_info)
+        'usuarios_status': usuarios_info,
+        'ativos_count': len(usuarios_info['ativos']),
+        'inativos_count': len(usuarios_info['inativos'])
     }
 
     return render(request, 'adm/painel_adm.html', context)

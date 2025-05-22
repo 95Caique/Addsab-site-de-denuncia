@@ -1,35 +1,86 @@
 {% extends 'base.html' %}
-{% load widget_tweaks %}
+{% load static %}
 
-{% block title %}Editar Usuário{% endblock %}
 {% block content %}
 <div class="container mt-5">
-    <h2>Editar Perfil de {{ usuario.username }}</h2>
-    <form method="post">
-        {% csrf_token %}
-        {{ form.non_field_errors }}
-        <div class="mb-3">
-            <label for="id_first_name" class="form-label">Nome</label>
-            {{ form.first_name|add_class:'form-control' }}
-            {{ form.first_name.errors }}
+    {% if messages %}
+    <div class="messages mb-4">
+        {% for message in messages %}
+        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+             role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="mb-3">
-            <label for="id_last_name" class="form-label">Sobrenome</label>
-            {{ form.last_name|add_class:'form-control' }}
-            {{ form.last_name.errors }}
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="card">
+        <div class="card-header">
+            <h2>Editar Usuário</h2>
         </div>
-        <div class="mb-3">
-            <label for="id_email" class="form-label">Email</label>
-            {{ form.email|add_class:'form-control' }}
-            {{ form.email.errors }}
+        <div class="card-body">
+            <form method="post" class="needs-validation" novalidate>
+                {% csrf_token %}
+
+                <div class="mb-3">
+                    <label for="username" class="form-label">Nome de Usuário</label>
+                    <input type="text" class="form-control" id="username" name="username" value="{{ usuario.username }}" required>
+                    <div class="invalid-feedback">
+                        Por favor, informe um nome de usuário válido.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="password" class="form-label">Senha (deixe em branco para manter a atual)</label>
+                    <input type="password" class="form-control" id="password" name="password">
+                    <div class="form-text">
+                        Deixe este campo em branco se não deseja alterar a senha.
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label class="form-label">Tipo de Usuário</label>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipo" id="tipo_gerente" value="gerente" {% if tipo_atual == 'gerente' %}checked{% endif %} required>
+                        <label class="form-check-label" for="tipo_gerente">
+                            Gerente
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="tipo" id="tipo_atendente" value="atendente" {% if tipo_atual == 'atendente' %}checked{% endif %} required>
+                        <label class="form-check-label" for="tipo_atendente">
+                            Atendente
+                        </label>
+                    </div>
+                </div>
+
+                <div class="d-flex justify-content-between mt-4">
+                    <a href="{% url 'adm:painel_adm' %}" class="btn btn-secondary">Cancelar</a>
+                    <button type="submit" class="btn btn-primary">Salvar Alterações</button>
+                </div>
+            </form>
         </div>
-        <div class="mb-3">
-            <label for="id_tipo" class="form-label">Tipo de Usuário</label>
-            {{ form.tipo|add_class:'form-control' }}
-            {{ form.tipo.errors }}
-        </div>
-        <button type="submit" class="btn btn-success">Salvar Alterações</button>
-        <a href="{% url 'adm:painel_adm' %}" class="btn btn-secondary ms-2">Cancelar</a>
-    </form>
+    </div>
 </div>
+{% endblock %}
+
+{% block scripts_personalizados %}
+<script>
+    // Validação do formulário do Bootstrap
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('.needs-validation');
+
+        Array.from(forms).forEach(form => {
+            form.addEventListener('submit', event => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                form.classList.add('was-validated');
+            }, false);
+        });
+    });
+</script>
 {% endblock %}
