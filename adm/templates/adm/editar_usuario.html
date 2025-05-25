@@ -1,57 +1,75 @@
 {% extends 'base.html' %}
+{% include 'components/messages.html' %}
 {% load static %}
 
 {% block content %}
 <div class="container mt-5">
-    {% if messages %}
-    <div class="messages mb-4">
-        {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
-             role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <div class="card">
         <div class="card-header">
             <h2>Editar Usuário</h2>
         </div>
         <div class="card-body">
-            <form method="post" class="needs-validation" novalidate>
+            <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
                 {% csrf_token %}
 
-                <div class="mb-3">
-                    <label for="username" class="form-label">Nome de Usuário</label>
-                    <input type="text" class="form-control" id="username" name="username" value="{{ usuario.username }}" required>
-                    <div class="invalid-feedback">
-                        Por favor, informe um nome de usuário válido.
+                <div class="row">
+                    <div class="col-md-4 text-center mb-4">
+                        <div class="position-relative d-inline-block">
+                            {% if usuario.perfil.foto %}
+                                <img src="{{ usuario.perfil.foto.url }}" 
+                                     alt="Foto de Perfil" 
+                                     class="rounded-circle mb-3"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            {% else %}
+                                <img src="https://via.placeholder.com/150" 
+                                     alt="Foto de Perfil" 
+                                     class="rounded-circle mb-3"
+                                     style="width: 150px; height: 150px; object-fit: cover;">
+                            {% endif %}
+                            <div class="position-absolute bottom-0 end-0">
+                                <label for="foto" class="btn btn-sm btn-primary rounded-circle" style="width: 40px; height: 40px; padding: 0;">
+                                    <i class="fas fa-camera"></i>
+                                </label>
+                                <input type="file" class="d-none" id="foto" name="foto" accept="image/*" onchange="previewImage(this)">
+                            </div>
+                        </div>
+                        <div class="form-text">
+                            Clique no ícone da câmera para alterar a foto
+                        </div>
                     </div>
-                </div>
 
-                <div class="mb-3">
-                    <label for="password" class="form-label">Senha (deixe em branco para manter a atual)</label>
-                    <input type="password" class="form-control" id="password" name="password">
-                    <div class="form-text">
-                        Deixe este campo em branco se não deseja alterar a senha.
-                    </div>
-                </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <label for="username" class="form-label">Nome de Usuário</label>
+                            <input type="text" class="form-control" id="username" name="username" value="{{ usuario.username }}" required>
+                            <div class="invalid-feedback">
+                                Por favor, informe um nome de usuário válido.
+                            </div>
+                        </div>
 
-                <div class="mb-3">
-                    <label class="form-label">Tipo de Usuário</label>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tipo" id="tipo_gerente" value="gerente" {% if tipo_atual == 'gerente' %}checked{% endif %} required>
-                        <label class="form-check-label" for="tipo_gerente">
-                            Gerente
-                        </label>
-                    </div>
-                    <div class="form-check">
-                        <input class="form-check-input" type="radio" name="tipo" id="tipo_atendente" value="atendente" {% if tipo_atual == 'atendente' %}checked{% endif %} required>
-                        <label class="form-check-label" for="tipo_atendente">
-                            Atendente
-                        </label>
+                        <div class="mb-3">
+                            <label for="password" class="form-label">Senha (deixe em branco para manter a atual)</label>
+                            <input type="password" class="form-control" id="password" name="password">
+                            <div class="form-text">
+                                Deixe este campo em branco se não deseja alterar a senha.
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">Tipo de Usuário</label>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="tipo_gerente" value="gerente" {% if tipo_atual == 'gerente' %}checked{% endif %} required>
+                                <label class="form-check-label" for="tipo_gerente">
+                                    Gerente
+                                </label>
+                            </div>
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio" name="tipo" id="tipo_atendente" value="atendente" {% if tipo_atual == 'atendente' %}checked{% endif %} required>
+                                <label class="form-check-label" for="tipo_atendente">
+                                    Atendente
+                                </label>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -82,5 +100,17 @@
             }, false);
         });
     });
+
+    // Preview da imagem selecionada
+    function previewImage(input) {
+        if (input.files && input.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = input.parentElement.parentElement.querySelector('img');
+                img.src = e.target.result;
+            }
+            reader.readAsDataURL(input.files[0]);
+        }
+    }
 </script>
 {% endblock %}

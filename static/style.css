@@ -298,7 +298,7 @@ input[type="checkbox"] {
 
 .btn-anonimo:hover {
     background: rgb(4,121,9);
-background: radial-gradient(circle, rgba(4,121,9,1) 0%, rgba(4,121,9,1) 35%, rgba(26,255,0,1) 100%);
+    background: radial-gradient(circle, rgba(4,121,9,1) 0%, rgba(4,121,9,1) 35%, rgba(26,255,0,1) 100%);
     transform: scale(1.05);
     box-shadow: 0 6px 10px rgba(0, 0, 0, 0.15);
 }

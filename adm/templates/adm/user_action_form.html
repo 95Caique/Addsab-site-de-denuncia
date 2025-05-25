@@ -12,12 +12,11 @@
 {% endif %}
 
 {# components/user_action_form.html #}
-<form method="post" class="d-inline"
-      onsubmit="return confirm('{{ confirm_text }}');">
+<form method="post" class="d-inline">
     {% csrf_token %}
-    <input type="hidden" name="action" value="{{ action }}">
     <input type="hidden" name="user_id" value="{{ user_id }}">
-    <button type="submit" class="btn btn-sm {{ btn_class }}" title="{{ action|title }}">
-        <i class="fas {{ icon }}"></i>
+    <input type="hidden" name="action" value="{{ action }}">
+    <button type="submit" class="btn {{ btn_class }} btn-sm" onclick="return confirm('{{ confirm_text }}')">
+        <i class="fas {{ icon }}"></i> {{ action|title }}
     </button>
 </form>

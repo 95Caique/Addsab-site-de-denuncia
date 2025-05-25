@@ -3,6 +3,7 @@ from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.urls import reverse
+from django.core.files.storage import default_storage
 
 
 def is_gerente(user):
@@ -47,6 +48,7 @@ def editar_usuario(request, username):
             novo_username = request.POST.get('username')
             password = request.POST.get('password')
             tipo = request.POST.get('tipo')
+            foto = request.FILES.get('foto')
 
             if not all([novo_username, tipo]):
                 messages.error(request, 'Preencha todos os campos obrigatórios.')
@@ -67,6 +69,13 @@ def editar_usuario(request, username):
                 grupo, created = Group.objects.get_or_create(name=grupo_nome)
                 usuario.groups.add(grupo)
 
+                # Atualizar foto de perfil
+                if foto:
+                    if hasattr(usuario, 'perfil') and usuario.perfil.foto:
+                        default_storage.delete(usuario.perfil.foto.path)  # Remover foto antiga
+                    usuario.perfil.foto = foto
+                    usuario.perfil.save()
+
                 usuario.save()
                 messages.success(request, f'Usuário {novo_username} atualizado com sucesso!')
                 return redirect('adm:painel_adm')
@@ -85,7 +94,6 @@ def editar_usuario(request, username):
     except User.DoesNotExist:
         messages.error(request, 'Usuário não encontrado.')
         return redirect('adm:painel_adm')
-
 
 @login_required
 def painel_adm(request):
@@ -120,13 +128,19 @@ def painel_adm(request):
     }
 
     for usuario in usuarios:
+        # Criar perfil se não existir
+        if not hasattr(usuario, 'perfil'):
+            from .models import Perfil
+            Perfil.objects.create(user=usuario)
+
         tipo = 'Gerente' if usuario.groups.filter(name='Gerente').exists() else 'Atendente'
         usuario_info = {
             'username': usuario.username,
             'nome_completo': usuario.get_full_name() or usuario.username,
             'tipo': tipo,
             'ultimo_login': usuario.last_login,
-            'data_cadastro': usuario.date_joined
+            'data_cadastro': usuario.date_joined,
+            'foto_perfil': usuario.perfil.foto.url if usuario.perfil.foto else None
         }
 
         status = 'ativos' if usuario.is_active else 'inativos'

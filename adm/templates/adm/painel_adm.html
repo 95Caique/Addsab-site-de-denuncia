@@ -1,20 +1,9 @@
 {% extends 'base.html' %}
+{% include 'components/messages.html' %}
 {% load static %}
 
 {% block content %}
 <div class="container mt-5">
-    {% if messages %}
-    <div class="messages mb-4">
-        {% for message in messages %}
-        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
-             role="alert">
-            {{ message }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-        </div>
-        {% endfor %}
-    </div>
-    {% endif %}
-
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h2>Gerenciamento de Usuários</h2>
         <a href="{% url 'adm:cadastrar_usuario' %}" class="badge bg-success">
@@ -46,92 +35,83 @@
         </div>
     </div>
 
-    <div class="row">
-        <!-- Tabela Usuários Ativos -->
-        <div class="col-12 mb-4" id="tabela-ativos">
-            <h3>Usuários Ativos</h3>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nome</th>
-                            <th>Usuário</th>
-                            <th>Função</th>
-                            <th>Último Acesso</th>
-                            <th>Data de Cadastro</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for usuario in usuarios_status.ativos %}
-                            <tr>
-                                <td>{{ usuario.nome_completo }}</td>
-                                <td>{{ usuario.username }}</td>
-                                <td>
-                                    <span class="badge {% if usuario.tipo == 'Gerente' %}bg-primary{% else %}bg-success{% endif %}">
-                                        {{ usuario.tipo }}
-                                    </span>
-                                </td>
-                                <td>{{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</td>
-                                <td>{{ usuario.data_cadastro|date:"d/m/Y" }}</td>
-                                <td>
-                                    <div class="btn-group">
-                                        <a href="{% url 'adm:editar_usuario' usuario.username %}" class="btn btn-sm btn-warning" title="Editar">
-                                            <i class="fas fa-edit"></i>
-                                        </a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center">Nenhum usuário ativo encontrado.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Usuários Ativos -->
+    <div class="row" id="tabela-ativos">
+        <h3 class="mb-4">Usuários Ativos</h3>
+        {% for usuario in usuarios_status.ativos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="text-center mt-3">
+                    {% if usuario.foto_perfil %}
+                        <img src="{{ usuario.foto_perfil }}" alt="Foto de Perfil" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">{{ usuario.nome_completo }}</h5>
+                        <span class="badge {% if usuario.tipo == 'Gerente' %}bg-primary{% else %}bg-success{% endif %}">
+                            {{ usuario.tipo }}
+                        </span>
+                    </div>
+                    <p class="card-text">
+                        <strong>Usuário:</strong> {{ usuario.username }}<br>
+                        <strong>Último Acesso:</strong> {{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}<br>
+                        <strong>Data de Cadastro:</strong> {{ usuario.data_cadastro|date:"d/m/Y" }}
+                    </p>
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'adm:editar_usuario' usuario.username %}" class="btn btn-warning btn-sm">
+                            <i class="fas fa-edit"></i> Editar
+                        </a>
+                        {% include 'adm/user_action_form.html' with action='desativar' user_id=usuario.username icon='fa-user-slash' btn_class='btn-danger' confirm_text='Tem certeza que deseja desativar este usuário?' %}
+                    </div>
+                </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">Nenhum usuário ativo encontrado.</p>
+        </div>
+        {% endfor %}
+    </div>
 
-        <!-- Tabela Usuários Inativos -->
-        <div class="col-12 mb-4 d-none" id="tabela-inativos">
-            <h3>Usuários Inativos</h3>
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nome</th>
-                            <th>Usuário</th>
-                            <th>Função</th>
-                            <th>Último Acesso</th>
-                            <th>Data de Cadastro</th>
-                            <th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for usuario in usuarios_status.inativos %}
-                            <tr>
-                                <td>{{ usuario.nome_completo }}</td>
-                                <td>{{ usuario.username }}</td>
-                                <td>
-                                    <span class="badge bg-secondary">
-                                        {{ usuario.tipo }}
-                                    </span>
-                                </td>
-                                <td>{{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}</td>
-                                <td>{{ usuario.data_cadastro|date:"d/m/Y" }}</td>
-                                <td>
-                                    {% include 'components/user_action_form.html' with action='reativar' user_id=usuario.username icon='fa-user-check' btn_class='btn-success' confirm_text='Tem certeza que deseja reativar este usuário?' %}
-                                </td>
-                            </tr>
-                        {% empty %}
-                            <tr>
-                                <td colspan="6" class="text-center">Nenhum usuário inativo encontrado.</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+    <!-- Usuários Inativos -->
+    <div class="row d-none" id="tabela-inativos">
+        <h3 class="mb-4">Usuários Inativos</h3>
+        {% for usuario in usuarios_status.inativos %}
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="text-center mt-3">
+                    {% if usuario.foto_perfil %}
+                        <img src="{{ usuario.foto_perfil }}" alt="Foto de Perfil" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% else %}
+                        <img src="https://via.placeholder.com/150" alt="Foto de Perfil" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                    {% endif %}
+                </div>
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="card-title mb-0">{{ usuario.nome_completo }}</h5>
+                        <span class="badge bg-secondary">
+                            {{ usuario.tipo }}
+                        </span>
+                    </div>
+                    <p class="card-text">
+                        <strong>Usuário:</strong> {{ usuario.username }}<br>
+                        <strong>Último Acesso:</strong> {{ usuario.ultimo_login|date:"d/m/Y H:i"|default:"Nunca acessou" }}<br>
+                        <strong>Data de Cadastro:</strong> {{ usuario.data_cadastro|date:"d/m/Y" }}
+                    </p>
+                    <div class="d-flex justify-content-end">
+                        {% include 'adm/user_action_form.html' with action='reativar' user_id=usuario.username icon='fa-user-check' btn_class='btn-success' confirm_text='Tem certeza que deseja reativar este usuário?' %}
+                    </div>
+                </div>
             </div>
         </div>
+        {% empty %}
+        <div class="col-12">
+            <p class="text-center">Nenhum usuário inativo encontrado.</p>
+        </div>
+        {% endfor %}
     </div>
 </div>
 {% endblock %}
