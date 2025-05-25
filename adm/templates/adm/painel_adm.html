@@ -38,8 +38,9 @@
     <!-- Usuários Ativos -->
     <div class="row" id="tabela-ativos">
         <h3 class="mb-4">Usuários Ativos</h3>
+        <hr>
         {% for usuario in usuarios_status.ativos %}
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4 mt-4">
             <div class="card h-100">
                 <div class="text-center mt-3">
                     {% if usuario.foto_perfil %}
@@ -61,10 +62,10 @@
                         <strong>Data de Cadastro:</strong> {{ usuario.data_cadastro|date:"d/m/Y" }}
                     </p>
                     <div class="d-flex justify-content-end gap-2">
-                        <a href="{% url 'adm:editar_usuario' usuario.username %}" class="btn btn-warning btn-sm">
-                            <i class="fas fa-edit"></i> Editar
+                        <a href="{% url 'adm:editar_usuario' usuario.username %}" class="btn btn-warning btn-sm rounded-pill">
+                            <i class="fas fa-edit "></i> Editar
                         </a>
-                        {% include 'adm/user_action_form.html' with action='desativar' user_id=usuario.username icon='fa-user-slash' btn_class='btn-danger' confirm_text='Tem certeza que deseja desativar este usuário?' %}
+                        {% include 'adm/user_action_form.html' with action='desativar' user_id=usuario.username icon='fa-user-slash' btn_class='btn-danger rounded-pill' confirm_text='Tem certeza que deseja desativar este usuário?' %}
                     </div>
                 </div>
             </div>
@@ -79,8 +80,9 @@
     <!-- Usuários Inativos -->
     <div class="row d-none" id="tabela-inativos">
         <h3 class="mb-4">Usuários Inativos</h3>
+        <hr>
         {% for usuario in usuarios_status.inativos %}
-        <div class="col-md-4 mb-4">
+        <div class="col-md-4 mb-4 mt-4">
             <div class="card h-100">
                 <div class="text-center mt-3">
                     {% if usuario.foto_perfil %}
@@ -102,7 +104,7 @@
                         <strong>Data de Cadastro:</strong> {{ usuario.data_cadastro|date:"d/m/Y" }}
                     </p>
                     <div class="d-flex justify-content-end">
-                        {% include 'adm/user_action_form.html' with action='reativar' user_id=usuario.username icon='fa-user-check' btn_class='btn-success' confirm_text='Tem certeza que deseja reativar este usuário?' %}
+                        {% include 'adm/user_action_form.html' with action='reativar' user_id=usuario.username icon='fa-user-check' btn_class='btn-success rounded-pill' confirm_text='Tem certeza que deseja reativar este usuário?' %}
                     </div>
                 </div>
             </div>
@@ -116,26 +118,3 @@
 </div>
 {% endblock %}
 
-{% block scripts_personalizados %}
-<script>
-    document.addEventListener('DOMContentLoaded', function() {
-        // Adicionar eventos de clique aos cards
-        document.querySelectorAll('.card.clickable').forEach(card => {
-            card.addEventListener('click', function() {
-                const target = this.dataset.target;
-                mostrarTabela(target);
-            });
-        });
-    });
-
-    function mostrarTabela(tipo) {
-        // Atualizar cards
-        document.querySelectorAll('.card.clickable').forEach(el => el.classList.remove('active'));
-        document.getElementById('card-' + tipo).classList.add('active');
-
-        // Atualizar visibilidade das tabelas
-        document.querySelectorAll('[id^="tabela-"]').forEach(el => el.classList.add('d-none'));
-        document.getElementById('tabela-' + tipo).classList.remove('d-none');
-    }
-</script>
-{% endblock %}

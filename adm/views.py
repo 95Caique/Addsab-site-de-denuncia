@@ -39,7 +39,7 @@ def cadastrar_usuario(request):
     return render(request, 'adm/cadastrar_usuario.html')
 
 
-@login_required
+# @login_required
 def editar_usuario(request, username):
     try:
         usuario = User.objects.get(username=username)
@@ -95,7 +95,7 @@ def editar_usuario(request, username):
         messages.error(request, 'Usuário não encontrado.')
         return redirect('adm:painel_adm')
 
-@login_required
+# @login_required
 def painel_adm(request):
     if request.method == 'POST':
         action = request.POST.get('action')

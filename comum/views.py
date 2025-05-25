@@ -34,6 +34,7 @@ def lista_denuncias(request):
     denuncias = Denuncia.objects.all().order_by('-data_denuncia')
     return render(request, 'painel_denuncias.html', {'denuncias': denuncias})
 
+
 # @login_required
 def painel_denuncias(request):
     # Processar ações de atualização de status, atribuição ou exclusão
