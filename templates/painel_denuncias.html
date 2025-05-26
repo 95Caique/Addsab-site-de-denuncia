@@ -24,16 +24,27 @@
     <div class="d-flex justify-content-between align-items-center">
         <p class="subtitle mb-0">Acompanhe o status das denúncias cadastradas nas últimas 24h.</p>
 
-        <div class="dropdown">
-            <button class="btn btn-secondary dropdown-toggle mb-3" type="button" id="dropdownMenuButton"
-                    data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                Gerenciador
-            </button>
-            <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-                <a class="dropdown-item" href="{% url 'adm:painel_adm' %}">Usuários</a>
-                <a class="dropdown-item" href="{% url 'adm:cadastrar_usuario' %}">Cadastrar Usuário</a>
-                <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="{% url 'adm:logout' %}">Sair</a>
+        <div class="d-flex gap-2">
+            <div class="btn-group" role="group">
+                <button type="button" class="btn btn-light mb-3" id="viewTable">
+                    <i class="fas fa-list"></i> Tabela
+                </button>
+                <button type="button" class="btn btn-light mb-3" id="viewCards">
+                    <i class="fas fa-th-large"></i> Cards
+                </button>
+            </div>
+
+            <div class="dropdown">
+                <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton"
+                        data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Gerenciador
+                </button>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                    <a class="dropdown-item" href="{% url 'adm:painel_adm' %}">Usuários</a>
+                    <a class="dropdown-item" href="{% url 'adm:cadastrar_usuario' %}">Cadastrar Usuário</a>
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="{% url 'adm:logout' %}">Sair</a>
+                </div>
             </div>
         </div>
     </div>
@@ -93,78 +104,139 @@
         </a>
         </div>
 
-        <h2>Lista de Denúncias</h2>
-        <table class="denuncias-table">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Espécie</th>
-            <th>Endereço</th>
-            <th>Data de Registro</th>
-                    <th>Status</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for denuncia in denuncias %}
-                <tr>
-            <td>{{ denuncia.id }}</td>
-                    <td>{{ denuncia.especie }}</td>
-                    <td>{{ denuncia.local|default:"Não informado" }}</td>
-                    <td>{{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</td>
-                    <td>
-                        <span class="status-badge badge-{{ denuncia.status }}">
-                            {{ denuncia.get_status_display }}
-                        </span>
-                    </td>
-                    <td class="actions">
-                <div class="action-group">
-                    <a href="{% url 'denuncia-detalhe' denuncia.pk %}" class="action-btn view-btn" title="Visualizar">
+        <!-- Visualização em Tabela -->
+        <div id="tableView">
+            <h2>Lista de Denúncias</h2>
+            <table class="denuncias-table">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Espécie</th>
+                        <th>Endereço</th>
+                        <th>Data de Registro</th>
+                        <th>Status</th>
+                        <th>Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for denuncia in denuncias %}
+                    <tr>
+                        <td>{{ denuncia.id }}</td>
+                        <td>{{ denuncia.especie }}</td>
+                        <td>{{ denuncia.local|default:"Não informado" }}</td>
+                        <td>{{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span class="status-badge badge-{{ denuncia.status }}">
+                                {{ denuncia.get_status_display }}
+                            </span>
+                        </td>
+                        <td class="actions">
+                            <a href="{% url 'denuncia-detalhe' denuncia.pk %}" class="action-btn view-btn" title="Visualizar">
                                 <i class="fas fa-eye"></i>
+                            </a>
+
+                            <div class="dropdown">
+                                <button class="action-btn edit-btn" type="button" id="statusDropdown{{ denuncia.id }}"
+                                        data-bs-toggle="dropdown" aria-expanded="true" title="Atualizar Status">
+                                    <i class="fas fa-edit"></i>
+                                </button>
+                                <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ denuncia.id }}">
+                                    {% for status_code, status_name in status_choices %}
+                                    <li>
+                                        <form method="post" style="display: inline;">
+                                            {% csrf_token %}
+                                            <input type="hidden" name="action" value="update_status">
+                                            <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                            <input type="hidden" name="status" value="{{ status_code }}">
+                                            <button type="submit"
+                                                    class="dropdown-item {% if denuncia.status == status_code %}active{% endif %}">
+                                                {{ status_name }}
+                                            </button>
+                                        </form>
+                                    </li>
+                                    {% endfor %}
+                                </ul>
+                            </div>
+
+                            <form method="post" style="display: inline;"
+                                  onsubmit="return confirm('Tem certeza que deseja excluir esta denúncia?');">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="delete">
+                                <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                <button type="submit" class="action-btn delete-btn" title="Excluir">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align: center;">Nenhuma denúncia encontrada.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Visualização em Cards -->
+        <div id="cardsView" style="display: none;">
+            <h2>Lista de Denúncias</h2>
+            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4 mt-2">
+                {% for denuncia in denuncias %}
+                <div class="col">
+                    <a href="{% url 'denuncia-detalhe' denuncia.id %}" class="text-decoration-none text-dark">
+                        <div class="card h-100" style="border-radius: 15px !important;">
+                            <img src="{% if denuncia.imagens %}{{ denuncia.imagens.url }}{% else %}{% static 'images/imagem-padrao.jpg' %}{% endif %}"
+                                 alt="Imagem da denúncia" class="card-img-top" style="max-height: 200px; object-fit: cover;
+                                 border-top-left-radius: 15px !important; border-top-right-radius: 15px !important;">
+
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h5 class="card-title mb-0">{{ denuncia.especie }}</h5>
+
+                                </div>
+                                <h6 class="card-subtitle text-muted mb-3">Denunciado em {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</h6>
+                                <p class="card-text"><strong>Local:</strong> {{ denuncia.local|default:"Não informado" }}</p>
+                                <p class="card-text"><strong>Descrição:</strong> {{ denuncia.descricao_caso|slice:":15" }}...</p>
+
+                                <div class="d-flex justify-content-between align-items-center mt-3">
+                                    <span class="status-badge badge-{{ denuncia.status }}">
+                                        {{ denuncia.get_status_display }}
+                                    </span>
+                                    <div class="dropdown">
+                                        <button class="action-btn edit-btn" type="button" id="cardStatusDropdown{{ denuncia.id }}"
+                                                data-bs-toggle="dropdown" aria-expanded="true">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <ul class="dropdown-menu" aria-labelledby="cardStatusDropdown{{ denuncia.id }}">
+                                            {% for status_code, status_name in status_choices %}
+                                            <li>
+                                                <form method="post" style="display: inline;">
+                                                    {% csrf_token %}
+                                                    <input type="hidden" name="action" value="update_status">
+                                                    <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
+                                                    <input type="hidden" name="status" value="{{ status_code }}">
+                                                    <button type="submit"
+                                                            class="dropdown-item {% if denuncia.status == status_code %}active{% endif %}">
+                                                        {{ status_name }}
+                                                    </button>
+                                                </form>
+                                            </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </a>
-
-                    <div class="dropdown">
-                        <button class="action-btn edit-btn" type="button" id="statusDropdown{{ denuncia.id }}"
-                                data-bs-toggle="dropdown" aria-expanded="true" title="Atualizar Status">
-                            <i class="fas fa-edit"></i>
-                        </button>
-                        <ul class="dropdown-menu" aria-labelledby="statusDropdown{{ denuncia.id }}">
-                            {% for status_code, status_name in status_choices %}
-                            <li>
-                                <form method="post" style="display: inline;">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="action" value="update_status">
-                                    <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
-                                    <input type="hidden" name="status" value="{{ status_code }}">
-                                    <button type="submit"
-                                            class="dropdown-item {% if denuncia.status == status_code %}active{% endif %}">
-                                        {{ status_name }}
-                            </button>
-                                </form>
-                            </li>
-                            {% endfor %}
-                        </ul>
-                    </div>
-
-                    <form method="post" style="display: inline;"
-                          onsubmit="return confirm('Tem certeza que deseja excluir esta denúncia?');">
-                        {% csrf_token %}
-                        <input type="hidden" name="action" value="delete">
-                        <input type="hidden" name="denuncia_id" value="{{ denuncia.id }}">
-                        <button type="submit" class="action-btn delete-btn" title="Excluir">
-                            <i class="fas fa-trash"></i>
-                        </button>
-                    </form>
                 </div>
-                    </td>
-                </tr>
                 {% empty %}
-                <tr>
-                    <td colspan="6" style="text-align: center;">Nenhuma denúncia encontrada.</td>
-                </tr>
+                <div class="col-12">
+                    <p class="text-center">Nenhuma denúncia encontrada.</p>
+                </div>
                 {% endfor %}
-            </tbody>
-        </table>
+            </div>
+        </div>
     </div>
 {% endblock %}
 
@@ -176,6 +248,45 @@
         dropdowns.forEach(function(dropdownToggle) {
             new bootstrap.Dropdown(dropdownToggle);
         });
+
+        // Alternância entre visualizações
+        const viewTable = document.getElementById('viewTable');
+        const viewCards = document.getElementById('viewCards');
+        const tableView = document.getElementById('tableView');
+        const cardsView = document.getElementById('cardsView');
+
+        // Recuperar a preferência do usuário do localStorage
+        const savedView = localStorage.getItem('denunciasView') || 'table';
+        
+        // Aplicar a visualização salva
+        if (savedView === 'cards') {
+            tableView.style.display = 'none';
+            cardsView.style.display = 'block';
+            viewCards.classList.add('active');
+            viewTable.classList.remove('active');
+        } else {
+            tableView.style.display = 'block';
+            cardsView.style.display = 'none';
+            viewTable.classList.add('active');
+            viewCards.classList.remove('active');
+        }
+
+        // Event listeners para os botões de alternância
+        viewTable.addEventListener('click', function() {
+            tableView.style.display = 'block';
+            cardsView.style.display = 'none';
+            viewTable.classList.add('active');
+            viewCards.classList.remove('active');
+            localStorage.setItem('denunciasView', 'table');
         });
+
+        viewCards.addEventListener('click', function() {
+            tableView.style.display = 'none';
+            cardsView.style.display = 'block';
+            viewCards.classList.add('active');
+            viewTable.classList.remove('active');
+            localStorage.setItem('denunciasView', 'cards');
+        });
+    });
     </script>
 {% endblock %}
