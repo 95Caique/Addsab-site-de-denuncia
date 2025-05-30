@@ -3,18 +3,14 @@
         <div class="navbar-brand" href="/">
             <i class="fas fa-shield-alt"></i> AddSab
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+                data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+                aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
 
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="{% url 'home' %}">Home</a>-->
-<!--                </li>-->
-<!--                <li class="nav-item">-->
-<!--                    <a class="nav-link" href="{% url 'denuncia_create' %}">Denunciar</a>-->
-<!--                </li>-->
                 <li class="nav-item">
                     <a class="nav-link" href="{% url 'lista_denuncias' %}">Home</a>
                 </li>
@@ -26,11 +22,35 @@
                     {% endif %}
                 {% endif %}
             </ul>
+
+            <!-- Formulário de busca -->
+            <form class="d-flex me-3" role="search">
+                <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
+                <button class="btn btn-outline-success" type="submit">Buscar</button>
+            </form>
+
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
+                    <!-- Imagem do usuário -->
+                    <li class="nav-item d-flex align-items-center me-2">
+                        {% if user.perfil.foto %}
+                            <img src="{{ user.perfil.foto.url }}"
+                                 alt="Foto de Perfil"
+                                 class="rounded-circle"
+                                 style="width: 40px; height: 40px; object-fit: cover;">
+                        {% else %}
+                            <img src="https://via.placeholder.com/150"
+                                 alt="Foto de Perfil"
+                                 class="rounded-circle"
+                                 style="width: 40px; height: 40px; object-fit: cover;">
+                        {% endif %}
+                    </li>
+
+                    <!-- Dropdown do usuário -->
                     <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                            <i class="fas fa-user-circle"></i> {{ user.username }}
+                        <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown"
+                           role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            {{ user.username }}
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
                             <li><a class="dropdown-item" href="{% url 'adm:logout' %}">Sair</a></li>
