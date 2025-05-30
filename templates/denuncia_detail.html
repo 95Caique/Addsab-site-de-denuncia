@@ -139,6 +139,7 @@
 
                 <!-- Aba de Anexos -->
                 <div class="tab-pane fade" id="anexos" role="tabpanel">
+                {% if denuncia.status != 'cancelada' and denuncia.status != 'tratada' and denuncia.status != 'recebida' %}
                     <!-- Formulário para adicionar anexo -->
                     <div class="card mb-3">
                         <div class="card-body">
@@ -153,6 +154,7 @@
                             </form>
                         </div>
                     </div>
+                {% endif %}
 
                     <!-- Lista de anexos -->
                     <div class="table-responsive">
@@ -202,8 +204,10 @@
                                 {% for tratativa in tratativas %}
                                     <div class="list-group-item">
                                         <p class="mb-1">{{ tratativa.descricao }}</p>
-                                        <small>Status de tratativa alterado de {{ tratativa.get_status_anterior_display }} para
-                                            {{ tratativa.get_status_novo_display }} as {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}
+                                        <small>Tratativa alterada de {{ tratativa.get_status_anterior_display }} para
+                                            {{ tratativa.get_status_novo_display }} por
+                                            {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }} as
+                                            {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}
                                         </small>
                                     </div>
                                 {% endfor %}

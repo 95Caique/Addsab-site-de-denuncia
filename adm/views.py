@@ -2,8 +2,9 @@ from django.contrib.auth.decorators import user_passes_test, login_required
 from django.contrib.auth.models import User, Group
 from django.shortcuts import render, redirect
 from django.contrib import messages
-from django.urls import reverse
+from django.urls import reverse, reverse_lazy
 from django.core.files.storage import default_storage
+from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
 
 
 def is_gerente(user):
@@ -14,7 +15,7 @@ def is_atendente(user):
     return user.is_authenticated and user.groups.filter(name='Atendente').exists()
 
 
-@user_passes_test(is_gerente)
+# @user_passes_test(is_gerente)
 def cadastrar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -39,7 +40,7 @@ def cadastrar_usuario(request):
     return render(request, 'adm/cadastrar_usuario.html')
 
 
-# @login_required
+@login_required
 def editar_usuario(request, username):
     try:
         usuario = User.objects.get(username=username)
@@ -95,7 +96,7 @@ def editar_usuario(request, username):
         messages.error(request, 'Usuário não encontrado.')
         return redirect('adm:painel_adm')
 
-# @login_required
+@login_required
 def painel_adm(request):
     if request.method == 'POST':
         action = request.POST.get('action')
@@ -128,19 +129,13 @@ def painel_adm(request):
     }
 
     for usuario in usuarios:
-        # Criar perfil se não existir
-        if not hasattr(usuario, 'perfil'):
-            from .models import Perfil
-            Perfil.objects.create(user=usuario)
-
         tipo = 'Gerente' if usuario.groups.filter(name='Gerente').exists() else 'Atendente'
         usuario_info = {
             'username': usuario.username,
             'nome_completo': usuario.get_full_name() or usuario.username,
             'tipo': tipo,
             'ultimo_login': usuario.last_login,
-            'data_cadastro': usuario.date_joined,
-            'foto_perfil': usuario.perfil.foto.url if usuario.perfil.foto else None
+            'data_cadastro': usuario.date_joined
         }
 
         status = 'ativos' if usuario.is_active else 'inativos'
@@ -153,3 +148,19 @@ def painel_adm(request):
     }
 
     return render(request, 'adm/painel_adm.html', context)
+
+class CustomPasswordResetView(PasswordResetView):
+    template_name = 'adm/esqueceu_senha.html'
+    email_template_name = 'adm/email/recuperar_senha_email.html'
+    subject_template_name = 'adm/email/recuperar_senha_subject.txt'
+    success_url = reverse_lazy('adm:senha_reset_done')
+
+class CustomPasswordResetDoneView(PasswordResetDoneView):
+    template_name = 'adm/senha_reset_done.html'
+
+class CustomPasswordResetConfirmView(PasswordResetConfirmView):
+    template_name = 'adm/redefinir_senha.html'
+    success_url = reverse_lazy('adm:senha_reset_complete')
+
+class CustomPasswordResetCompleteView(PasswordResetCompleteView):
+    template_name = 'adm/senha_reset_complete.html'

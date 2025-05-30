@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Redefinir Senha{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="text-center">Redefinir Senha</h3>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                    <div class="messages mb-4">
+                        {% for message in messages %}
+                        <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags }}{% endif %} alert-dismissible fade show"
+                             role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+
+                    {% if validlink %}
+                    <p class="text-center mb-4">
+                        Por favor, digite sua nova senha duas vezes para confirmar.
+                    </p>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="new_password1" class="form-label">Nova Senha</label>
+                            <input type="password" class="form-control" id="new_password1" name="new_password1" required>
+                            {% if form.new_password1.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.new_password1.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            <label for="new_password2" class="form-label">Confirmar Nova Senha</label>
+                            <input type="password" class="form-control" id="new_password2" name="new_password2" required>
+                            {% if form.new_password2.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.new_password2.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Alterar Senha</button>
+                        </div>
+                    </form>
+                    {% else %}
+                    <div class="alert alert-danger">
+                        O link de redefinição de senha é inválido, possivelmente porque já foi usado. 
+                        Por favor, solicite uma nova redefinição de senha.
+                    </div>
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'adm:esqueceu_senha' %}" class="btn btn-primary">Solicitar Nova Redefinição</a>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

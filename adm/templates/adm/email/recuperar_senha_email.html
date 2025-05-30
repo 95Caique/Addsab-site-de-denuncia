@@ -1,0 +1,14 @@
+{% autoescape off %}
+Olá,
+
+Você está recebendo este email porque solicitou a recuperação de senha da sua conta no sistema de denúncias.
+
+Por favor, acesse o link abaixo para redefinir sua senha:
+
+{{ protocol }}://{{ domain }}{% url 'adm:redefinir_senha' uidb64=uid token=token %}
+
+Se você não solicitou esta recuperação de senha, por favor ignore este email.
+
+Atenciosamente,
+Equipe de Denúncias
+{% endautoescape %} 

@@ -11,4 +11,9 @@ urlpatterns = [
     path('editar-usuario/<str:username>/', views.editar_usuario, name='editar_usuario'),
 
     path('painel/', views.painel_adm, name='painel_adm'),
+
+    path('esqueceu-senha/', views.CustomPasswordResetView.as_view(), name='esqueceu_senha'),
+    path('senha-reset-done/', views.CustomPasswordResetDoneView.as_view(), name='senha_reset_done'),
+    path('redefinir-senha/<uidb64>/<token>/', views.CustomPasswordResetConfirmView.as_view(), name='redefinir_senha'),
+    path('senha-reset-complete/', views.CustomPasswordResetCompleteView.as_view(), name='senha_reset_complete'),
 ]
