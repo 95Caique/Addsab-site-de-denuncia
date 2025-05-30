@@ -21,9 +21,6 @@
 </head>
 
 <body>
-    <!-- Navbar -->
-    {% include 'navbar.html' %}
-
     <!-- Conteúdo principal -->
     <main class="container py-4">
         {% block content %}
@@ -65,38 +62,8 @@
                 }
             });
         }
-
-        // Código para o painel administrativo
-        var cardsClickable = document.querySelectorAll('.card.clickable');
-        if (cardsClickable.length > 0) {
-            cardsClickable.forEach(card => {
-                card.addEventListener('click', function() {
-                    const target = this.dataset.target;
-                    mostrarTabela(target);
-                });
-            });
-        }
     });
-
-    // Função para mostrar/esconder tabelas no painel administrativo
-    function mostrarTabela(tipo) {
-        if (!tipo) return; // Se não houver tipo, não faz nada
-
-        // Atualizar cards
-        document.querySelectorAll('.card.clickable').forEach(el => el.classList.remove('active'));
-        var cardAtivo = document.getElementById('card-' + tipo);
-        if (cardAtivo) {
-            cardAtivo.classList.add('active');
-        }
-
-        // Atualizar visibilidade das tabelas
-        document.querySelectorAll('[id^="tabela-"]').forEach(el => el.classList.add('d-none'));
-        var tabela = document.getElementById('tabela-' + tipo);
-        if (tabela) {
-            tabela.classList.remove('d-none');
-        }
-    }
     </script>
 
 </body>
-</html>
+</html> 

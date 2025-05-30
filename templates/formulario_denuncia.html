@@ -1,4 +1,4 @@
-{% extends 'base.html' %}
+{% extends 'base_denuncia.html' %}
 {% load static %}
 
 {% block title %}Denúncia de Maus-Tratos a Animais{% endblock %}
@@ -7,7 +7,7 @@
 <header class="bg-light py-5 position-relative">
     <div class="container text-center">
         <a href="{% url 'adm:login' %}?next={% url 'lista_denuncias' %}"
-           class="btn btn-success rounded-pill mt-3 position-absolute top-0 end-0 m-3">Administração</a>
+           class="btn btn-outline-success rounded-pill mt-3 position-absolute top-0 end-0 m-3">Administração</a>
         <br>
         <h1>Denúncia de Maus-Tratos a Animais</h1>
         <p>Preserve a vida e o bem-estar dos animais. Sua denúncia pode salvar uma vida!</p>

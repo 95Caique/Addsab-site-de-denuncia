@@ -5,6 +5,7 @@ from django.contrib import messages
 from django.urls import reverse, reverse_lazy
 from django.core.files.storage import default_storage
 from django.contrib.auth.views import PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, PasswordResetCompleteView
+from .models import Perfil
 
 
 def is_gerente(user):
@@ -15,7 +16,7 @@ def is_atendente(user):
     return user.is_authenticated and user.groups.filter(name='Atendente').exists()
 
 
-# @user_passes_test(is_gerente)
+@user_passes_test(is_gerente)
 def cadastrar_usuario(request):
     if request.method == 'POST':
         username = request.POST.get('username')
@@ -129,13 +130,18 @@ def painel_adm(request):
     }
 
     for usuario in usuarios:
+        # Criar perfil se não existir
+        if not hasattr(usuario, 'perfil'):
+            Perfil.objects.create(user=usuario)
+
         tipo = 'Gerente' if usuario.groups.filter(name='Gerente').exists() else 'Atendente'
         usuario_info = {
             'username': usuario.username,
             'nome_completo': usuario.get_full_name() or usuario.username,
             'tipo': tipo,
             'ultimo_login': usuario.last_login,
-            'data_cadastro': usuario.date_joined
+            'data_cadastro': usuario.date_joined,
+            'foto_perfil': usuario.perfil.foto if usuario.perfil.foto else None
         }
 
         status = 'ativos' if usuario.is_active else 'inativos'

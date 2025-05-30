@@ -1,5 +1,4 @@
-         {% extends 'base.html' %}
-
+{% extends 'base_denuncia.html' %}
 {% block title %}Login{% endblock %}
 
 {% block content %}
@@ -17,6 +16,9 @@
                                 <div class="alert alert-danger">{{ form.non_field_errors }}</div>
                             {% endif %}
                             <div class="mb-3">
+<!--                                <label for="cpf" class="form-label">CPF</label>-->
+<!--                                <input type="number" id="cpf" name="username" class="form-control" placeholder="Digite apenas números" value="{{ form.username.value|default:'' }}">-->
+<!--                                -->
                                 <label for="username" class="form-label">Usuário</label>
                                 <input type="text" id="username" name="username" class="form-control" placeholder="Digite seu nome de usuário" value="{{ form.username.value|default:'' }}">
                                 {% for error in form.username.errors %}
@@ -31,16 +33,16 @@
                                 {% endfor %}
                             </div>
                             <input type="hidden" name="next" value="{{ next }}">
-                            <div class="form-group text-center">
-                                <button type="submit" class="btn btn-success rounded-pill w-50 mt-3">Login</button>
-                            </div>
-                            <div class="text-center mt-3">
-                                <a href="{% url 'adm:esqueceu_senha' %}" class="text-decoration-none" style="color: black;">Esqueceu a senha?</a>
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-success rounded-pill w-100 mt-3">Login</button>
                             </div>
                             {% if error_message %}
                                 <div class="alert alert-danger mt-3">{{ error_message }}</div>
                             {% endif %}
                         </form>
+                        <div class="text-center mt-3">
+                            <a href="{% url 'adm:esqueceu_senha' %}" class="text-decoration-none">Esqueceu sua senha?</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -49,46 +51,3 @@
 </div>
 </body>
 {% endblock %}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary">Entrar</button>
-                        </div>
-
-                    </form> 
