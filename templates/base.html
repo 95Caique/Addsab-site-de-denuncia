@@ -12,6 +12,7 @@
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet">
     <!-- CSS personalizado -->
     <link rel="stylesheet" href="{% static 'style.css' %}">
+    <link rel="shortcut icon" href="{% static 'images/fav.png' %}" type="image/png">
 
     <style>
         .hidden {
@@ -21,14 +22,10 @@
 </head>
 
 <body>
-    <!-- Navbar -->
     {% include 'navbar.html' %}
 
-    <!-- Conteúdo principal -->
-    <main class="container py-4">
         {% block content %}
         {% endblock %}
-    </main>
 
     <!-- Rodapé -->
     {% block footer %}

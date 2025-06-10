@@ -1,6 +1,5 @@
 from django.db import models
 from .enums import tipo_maus_tratos_choices, STATUS_DENUNCIA_CHOICES
-from django.utils.safestring import mark_safe
 from django.utils import timezone
 from adm.models import User
 import os

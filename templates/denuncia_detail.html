@@ -33,6 +33,8 @@
 <!--                <p><strong>Raça:</strong> {{ denuncia.raca|default:"Não informada" }}</p>-->
 <!--                <p><strong>Idade:</strong> {{ denuncia.idade|default:"Não informada" }}</p>-->
                 <p><strong>Descrição do Animal:</strong> {{ denuncia.descricao_animal|default:"Não informada" }}</p>
+                <p><strong>Data da Denúncia:</strong> {{ denuncia.data_denuncia|date:"d/m/Y H:i" }}</p>
+
             </div>
 
             <div class="col-md-6 mt-3">
@@ -206,7 +208,7 @@
                                         <p class="mb-1">{{ tratativa.descricao }}</p>
                                         <small>Tratativa alterada de {{ tratativa.get_status_anterior_display }} para
                                             {{ tratativa.get_status_novo_display }} por
-                                            {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }} as
+                                            {{ tratativa.atendente.get_full_name|default:tratativa.atendente.username }} dia
                                             {{ tratativa.data_tratativa|date:"d/m/Y H:i" }}
                                         </small>
                                     </div>

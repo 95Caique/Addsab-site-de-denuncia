@@ -1,7 +1,8 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light">
+{% load static %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light mt-2">
     <div class="container">
         <div class="navbar-brand" href="/">
-            <i class="fas fa-shield-alt"></i> AddSab
+           <img src="{% static 'images/image.png' %}" alt="Logo da Associação" class="img-fluid" style="max-height: 30px;">
         </div>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
                 data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
@@ -20,10 +21,11 @@
                         <a class="nav-link" href="{% url 'adm:painel_adm' %}">Usuários</a>
                     </li>
                     {% endif %}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'adm:painel_adm' %}">Meus dados</a>
                 {% endif %}
             </ul>
 
-            <!-- Formulário de busca -->
             <form class="d-flex me-3" role="search">
                 <input class="form-control me-2" type="search" placeholder="Buscar" aria-label="Search">
                 <button class="btn btn-outline-success" type="submit">Buscar</button>
@@ -31,7 +33,6 @@
 
             <ul class="navbar-nav">
                 {% if user.is_authenticated %}
-                    <!-- Imagem do usuário -->
                     <li class="nav-item d-flex align-items-center me-2">
                         {% if user.perfil.foto %}
                             <img src="{{ user.perfil.foto.url }}"

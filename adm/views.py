@@ -43,6 +43,10 @@ def cadastrar_usuario(request):
 
 @login_required
 def editar_usuario(request, username):
+    if not is_gerente(request.user) and request.user.username != username:
+        messages.error(request, 'Você não tem permissão para editar este usuário.')
+        return redirect('adm:painel_adm')
+
     try:
         usuario = User.objects.get(username=username)
 
@@ -74,7 +78,7 @@ def editar_usuario(request, username):
                 # Atualizar foto de perfil
                 if foto:
                     if hasattr(usuario, 'perfil') and usuario.perfil.foto:
-                        default_storage.delete(usuario.perfil.foto.path)  # Remover foto antiga
+                        default_storage.delete(usuario.perfil.foto.path)
                     usuario.perfil.foto = foto
                     usuario.perfil.save()
 
